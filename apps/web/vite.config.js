@@ -1,14 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import { fileURLToPath, URL } from 'node:url';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@cogniease/core': path.resolve(__dirname, '../../packages/core/src')
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@cogniease/core': fileURLToPath(new URL('../../packages/core/src', import.meta.url))
     }
   },
   server: {

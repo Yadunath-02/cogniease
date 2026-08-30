@@ -13,6 +13,9 @@
     "preview": "npm run preview --workspace=apps/web",
     "test": "node --test packages/core/test/core.test.js"
   },
+  "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.21.5"
+  },
   "keywords": [
     "accessibility",
     "a11y",

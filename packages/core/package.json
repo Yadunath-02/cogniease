@@ -1,0 +1,25 @@
+{
+  "name": "@cogniease/core",
+  "version": "1.0.0",
+  "description": "Reusable neurodivergent accessibility transformation engine with Saccadic Bionic reading, speech synthesis boundary tracking, and readability analytics.",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./bionic": "./src/bionic.js",
+    "./speech": "./src/speech.js",
+    "./readability": "./src/readability.js"
+  },
+  "keywords": [
+    "accessibility",
+    "bionic-reading",
+    "saccadic-fixation",
+    "flesch-kincaid",
+    "readability",
+    "speech-synthesis",
+    "web-speech-api"
+  ],
+  "author": "CogniEase Team",
+  "license": "MIT"
+}

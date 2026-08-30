@@ -1,0 +1,29 @@
+{
+  "name": "cogniease-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CogniEase - Neurodivergent & Accessible Reading Assistant Monorepo",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "preview": "npm run preview --workspace=apps/web",
+    "test": "node --test packages/core/test/core.test.js"
+  },
+  "keywords": [
+    "accessibility",
+    "a11y",
+    "wcag-aaa",
+    "dyslexia",
+    "adhd",
+    "bionic-reading",
+    "text-to-speech",
+    "monorepo",
+    "neurodiversity"
+  ],
+  "author": "CogniEase Team",
+  "license": "MIT"
+}

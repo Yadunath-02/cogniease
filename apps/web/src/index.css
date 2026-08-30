@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-primary: #0D1117;
+    --text-primary: #F0F6FC;
+    --accent-color: #58A6FF;
+  }
+
+  /* High contrast AAA outline rules */
+  *:focus-visible {
+    outline: 3px solid #58A6FF !important;
+    outline-offset: 3px !important;
+    border-radius: 4px;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Saccadic Bionic Reading Highlight */
+.bionic-fixation {
+  font-weight: 800 !important;
+  color: inherit;
+  opacity: 1;
+}
+
+/* Multisensory Karaoke TTS Active Word Animation */
+.karaoke-word-active {
+  background-color: rgba(255, 221, 0, 0.45) !important;
+  color: inherit !important;
+  padding: 0.1em 0.25em;
+  border-radius: 0.25em;
+  box-shadow: 0 0 0 2px rgba(255, 221, 0, 0.8);
+  transition: all 0.08s ease-in-out;
+}
+
+.theme-dark .karaoke-word-active {
+  background-color: rgba(88, 166, 255, 0.45) !important;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.9);
+}
+
+.theme-contrast .karaoke-word-active {
+  background-color: #00FFFF !important;
+  color: #000000 !important;
+  font-weight: 900 !important;
+}
+
+/* Reading Ruler Mask System */
+.reading-ruler-overlay-top {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 40;
+  backdrop-filter: blur(1px);
+  transition: height 0.04s linear;
+}
+
+.reading-ruler-overlay-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  z-index: 40;
+  backdrop-filter: blur(1px);
+  transition: top 0.04s linear;
+}
+
+.reading-ruler-guide-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 45;
+  box-shadow: 0 0 12px rgba(255, 221, 0, 0.35);
+  transition: top 0.04s linear;
+}
+
+/* Dyslexia Simulation Animations */
+@keyframes dyslexic-jitter-1 {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-1.5px, 1px) rotate(-1deg); }
+  75% { transform: translate(1.5px, -1px) rotate(1deg); }
+}
+
+@keyframes dyslexic-jitter-2 {
+  0%, 100% { transform: translate(0, 0) scaleX(1); }
+  50% { transform: translate(1px, -1.5px) scaleX(-1); }
+}
+
+.sim-dyslexia-jitter {
+  display: inline-block;
+  animation: dyslexic-jitter-1 1.8s infinite ease-in-out;
+}
+
+.sim-dyslexia-swap {
+  display: inline-block;
+  animation: dyslexic-jitter-2 2.4s infinite ease-in-out;
+}
+
+/* ADHD Distractor Floating Animation */
+@keyframes float-distractor {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-12px) rotate(3deg); opacity: 1; }
+}
+
+.adhd-distractor-bubble {
+  animation: float-distractor 4s infinite ease-in-out;
+}
+
+/* Syllable boundary separation dot */
+.syllable-dot {
+  display: inline-block;
+  margin: 0 1px;
+  color: #888888;
+  font-weight: normal;
+  opacity: 0.6;
+}
+
+/* Custom Accessibility Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(140, 150, 165, 0.4);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 150, 165, 0.7);
+}

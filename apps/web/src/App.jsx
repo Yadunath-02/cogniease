@@ -366,8 +366,8 @@ export default function App() {
         aria-pressed={active}
         className={`min-h-[44px] px-4 py-2 rounded-full text-xs font-bold border transition-all whitespace-nowrap flex items-center gap-1.5 ${
           active
-            ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/30'
-            : 'bg-obsidian-800 border-obsidian-border text-obsidian-text hover:border-ambergold-500/50 hover:text-ambergold-400'
+            ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-500/30'
+            : 'bg-obsidian-800 border-obsidian-border text-obsidian-text hover:border-indigo-500/50 hover:text-indigo-300'
         }`}
       >
         <span>{emoji}</span>
@@ -387,7 +387,7 @@ export default function App() {
       {/* Skip to Main Content Link */}
       <a
         href="#workspace-surface"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-ambergold-500 focus:text-obsidian-900 focus:rounded-lg font-bold shadow-2xl"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-indigo-600 focus:text-white focus:rounded-lg font-bold shadow-2xl"
       >
         Skip to main content
       </a>
@@ -558,7 +558,7 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsPersonaSimulatorOpen(true)}
-            className="min-h-[44px] px-3 py-2 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-obsidian-muted hover:text-ambergold-400 border border-transparent hover:border-obsidian-border"
+            className="min-h-[44px] px-3 py-2 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-obsidian-muted hover:text-cyan-300 border border-transparent hover:border-obsidian-border"
             title="Open full barrier sandbox (Alt+S)"
           >
             Sandbox

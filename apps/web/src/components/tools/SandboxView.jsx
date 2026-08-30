@@ -35,7 +35,7 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
     if (cogniEaseEnabled) {
       const tokens = parseBionicTokens(BASE_TEXT);
       return (
-        <div className="font-dyslexic text-base leading-loose tracking-wide text-emerald-300">
+        <div className="font-dyslexic text-base leading-loose tracking-wide text-cyan-300">
           {tokens.map((t, idx) => {
             if (t.type === 'newline') return <div key={idx} className="h-4" />;
             if (t.type === 'space') return <span key={idx}>{t.raw}</span>;
@@ -70,7 +70,7 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
             return (
               <span
                 key={`${wIdx}-${cIdx}-${jitterTick}`}
-                className={isJitter ? 'sim-dyslexia-jitter inline-block text-amber-200' : 'inline-block'}
+                className={isJitter ? 'sim-dyslexia-jitter inline-block text-cyan-200' : 'inline-block'}
               >
                 {displayChar}
               </span>
@@ -117,7 +117,7 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold font-mono transition-all shadow-md ${
             cogniEaseEnabled
               ? 'bg-emerald-600 hover:bg-emerald-500 text-white ring-2 ring-emerald-400/60'
-              : 'bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 shadow-ambergold-500/25'
+              : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-500/25'
           }`}
         >
           <Sparkles className="w-4 h-4" />
@@ -131,7 +131,7 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
           onClick={() => setActiveTab('dyslexia')}
           className={`px-4 py-2 text-xs font-mono font-bold rounded-xl border transition ${
             activeTab === 'dyslexia'
-              ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400'
+              ? 'bg-indigo-600 text-white border-indigo-500'
               : 'bg-obsidian-800 text-obsidian-muted border-obsidian-border hover:text-white'
           }`}
         >
@@ -183,7 +183,7 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
                       step="0.1"
                       value={dyslexiaIntensity}
                       onChange={(e) => setDyslexiaIntensity(parseFloat(e.target.value))}
-                      className="w-20 accent-ambergold-400 cursor-pointer"
+                      className="w-20 accent-indigo-500 cursor-pointer"
                     />
                   </div>
                 )}
@@ -199,15 +199,15 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
                   <div className="absolute top-4 right-8 bg-purple-950/80 border border-purple-500 text-purple-200 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20">
                     💭 Did I respond to that Slack message?
                   </div>
-                  <div className="absolute bottom-12 left-10 bg-ambergold-500/20 border border-ambergold-500 text-ambergold-400 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '1.5s' }}>
+                  <div className="absolute bottom-12 left-10 bg-indigo-500/20 border border-indigo-500 text-indigo-300 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '1.5s' }}>
                     🔔 Phone buzzes in another room
                   </div>
                 </>
               )}
 
               {cogniEaseEnabled ? (
-                <div className="p-4 rounded-xl bg-obsidian-800 border-2 border-ambergold-500 shadow-focus-aaa font-lexend text-base leading-loose text-white">
-                  <div className="text-xs font-mono font-bold text-ambergold-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-4 rounded-xl bg-obsidian-800 border-2 border-indigo-500 shadow-focus-aaa font-lexend text-base leading-loose text-white">
+                  <div className="text-xs font-mono font-bold text-indigo-400 mb-2 uppercase tracking-wider flex items-center gap-1.5">
                     <Zap className="w-4 h-4" />
                     <span>CogniEase Focus Anchor Active (Bionic + Reading Ruler)</span>
                   </div>
@@ -225,10 +225,10 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
           {activeTab === 'sensory' && (
             <div>
               {cogniEaseEnabled ? (
-                <div className="p-6 rounded-xl bg-[#FBF0D9] text-[#2D2319] border-2 border-[#E2CC9C] font-atkinson text-base leading-loose shadow-xl">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#8C4300] mb-3">
+                <div className="p-6 rounded-xl bg-[#F6F1EA] text-[#2A241F] border-2 border-[#E0D5C7] font-atkinson text-base leading-loose shadow-xl">
+                  <div className="flex items-center gap-2 text-xs font-mono font-bold text-[#9A3412] mb-3">
                     <Sparkles className="w-4 h-4" />
-                    <span>WCAG AAA Warm Sepia (11.2:1 Contrast - No Ocular Glare)</span>
+                    <span>WCAG AAA Nordic Parchment (11.2:1 Contrast - No Ocular Glare)</span>
                   </div>
                   <p>{BASE_TEXT.split('\n\n')[0]}</p>
                 </div>
@@ -247,8 +247,8 @@ Individuals with ADHD experience dopamine regulation differences in the prefront
         </div>
 
         {/* Scientific Rationale Footer */}
-        <div className="mt-4 p-4 rounded-xl bg-blue-950/40 border border-blue-800/60 text-blue-200 text-xs flex items-start gap-3">
-          <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+        <div className="mt-4 p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/60 text-indigo-200 text-xs flex items-start gap-3">
+          <CheckCircle2 className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
           <div>
             <span className="font-bold text-white block mb-1 font-mono">Cognitive Science Takeaway:</span>
             <p className="leading-relaxed">

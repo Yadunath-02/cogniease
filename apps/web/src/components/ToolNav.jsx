@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 /**
- * ToolNav Component - Persistent horizontal tool switching bar (Goblin.tools style)
+ * ToolNav Component - Persistent horizontal tool switching bar
  */
 export default function ToolNav({ currentView, onSelectView }) {
   const tools = [
@@ -52,12 +52,12 @@ export default function ToolNav({ currentView, onSelectView }) {
                 onClick={() => onSelectView(t.id)}
                 className={`flex items-center gap-1.5 min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                   isActive
-                    ? 'bg-ambergold-500 text-obsidian-900 font-extrabold shadow-md shadow-ambergold-500/25'
-                    : 'bg-obsidian-800/80 hover:bg-obsidian-800 text-obsidian-text border border-obsidian-border/80 hover:border-ambergold-500/40'
+                    ? 'bg-indigo-600 border border-indigo-500 text-white font-extrabold shadow-md shadow-indigo-500/25'
+                    : 'bg-obsidian-800/80 hover:bg-obsidian-800 text-obsidian-text border border-obsidian-border/80 hover:border-indigo-500/40'
                 }`}
                 aria-pressed={isActive}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-obsidian-900' : 'text-ambergold-400'}`} />
+                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-cyan-400'}`} />
                 <span>{t.label}</span>
               </button>
             );
@@ -67,7 +67,7 @@ export default function ToolNav({ currentView, onSelectView }) {
         {/* Current Mode Badge */}
         <div className="hidden md:flex items-center gap-1 text-[11px] font-mono text-obsidian-muted shrink-0">
           <span>Active:</span>
-          <span className="font-bold text-ambergold-400 uppercase">{currentView}</span>
+          <span className="font-bold text-indigo-400 uppercase">{currentView}</span>
         </div>
 
       </div>

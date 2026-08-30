@@ -105,7 +105,7 @@ export default function SimplifierView({ sourceText, onChangeSourceText }) {
         <div className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento flex flex-col h-[600px]">
           <div className="flex items-center justify-between pb-3 border-b border-obsidian-border mb-3">
             <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-ambergold-400" />
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
               Complex Source Document
             </span>
             <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function SimplifierView({ sourceText, onChangeSourceText }) {
                   onChangeSourceText(SAMPLE_TEXTS[0].rawText);
                   setSimplifiedResult(SAMPLE_TEXTS[0].simplifiedText);
                 }}
-                className="text-[11px] font-mono text-ambergold-400 hover:underline"
+                className="text-[11px] font-mono text-cyan-400 hover:underline"
               >
                 Reset Sample
               </button>

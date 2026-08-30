@@ -84,12 +84,12 @@ export default function Navbar({
   };
 
   const THEMES = [
-    { id: 'obsidian', name: 'Obsidian AAA Dark', bg: '#0A0C10', text: '#F0F6FC' },
-    { id: 'light', name: 'Crisp Day Light', bg: '#FFFFFF', text: '#0A0D14' },
-    { id: 'sepia', name: 'Warm Sepia (Low Strain)', bg: '#FBF0D9', text: '#2D2319' },
-    { id: 'mint', name: 'Calming Mint (Photophobia)', bg: '#EBF7EE', text: '#132B1A' },
-    { id: 'irlen', name: 'Irlen Soft Blue', bg: '#E6F0FA', text: '#0E2338' },
-    { id: 'contrast', name: 'High Contrast Gold/Black', bg: '#000000', text: '#FFE600' }
+    { id: 'obsidian', name: 'Midnight Slate (Default)', bg: '#0B0F17', text: '#F9FAFB' },
+    { id: 'light', name: 'Crisp Day Light', bg: '#F8FAFC', text: '#0F172A' },
+    { id: 'sepia', name: 'Nordic Parchment (Sepia)', bg: '#F6F1EA', text: '#2A241F' },
+    { id: 'mint', name: 'Calming Sage (Mint)', bg: '#EEF8F2', text: '#132E1D' },
+    { id: 'irlen', name: 'Irlen Soft Blue', bg: '#EAF2FD', text: '#0E2540' },
+    { id: 'contrast', name: 'High Contrast Mode', bg: '#000000', text: '#FFFFFF' }
   ];
 
   const FONTS = [
@@ -102,9 +102,9 @@ export default function Navbar({
   ];
 
   const toolBtn = (active) =>
-    `flex items-center gap-1.5 min-h-[44px] px-3 py-2 text-xs font-semibold rounded-xl border transition-all ${
+    `flex items-center gap-1.5 min-h-[44px] px-3.5 py-2 text-xs font-semibold rounded-xl border transition-all ${
       active
-        ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/25 font-bold'
+        ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-500/25 font-bold'
         : 'bg-obsidian-800 hover:bg-obsidian-700 border-obsidian-border text-obsidian-text'
     }`;
 
@@ -122,13 +122,13 @@ export default function Navbar({
         <div className="flex items-center gap-3">
           <button
             onClick={() => onSelectView && onSelectView('home')}
-            className="flex items-center gap-2 min-h-[44px] pl-1.5 pr-3 py-1 rounded-full border border-obsidian-border bg-obsidian-800/90 hover:bg-obsidian-800 shadow-sm transition group"
+            className="flex items-center gap-2.5 min-h-[44px] pl-1.5 pr-3.5 py-1 rounded-full border border-obsidian-border bg-obsidian-800/90 hover:bg-obsidian-800 shadow-sm transition group"
             title="Return to Home Grid"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ambergold-600 to-ambergold-400 flex items-center justify-center text-obsidian-900 font-black text-sm shadow-md shadow-ambergold-500/20 group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white font-black text-sm shadow-md shadow-indigo-500/20 group-hover:scale-105 transition-transform">
               🧠
             </div>
-            <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-ambergold-400 transition-colors">
+            <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-indigo-300 transition-colors">
               CogniEase
             </span>
             <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-700/60 font-mono shadow-sm">
@@ -149,7 +149,7 @@ export default function Navbar({
               aria-expanded={showDocsMenu}
               aria-haspopup="listbox"
             >
-              <BookOpen className="w-3.5 h-3.5 text-ambergold-400" />
+              <BookOpen className="w-3.5 h-3.5 text-cyan-400" />
               <span>Documents</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
@@ -162,7 +162,7 @@ export default function Navbar({
                     onClick={() => { onLoadSample(s.id); closeMenus(); }}
                     className={`w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs transition ${
                       selectedSampleId === s.id
-                        ? 'bg-ambergold-500/15 text-ambergold-400 font-bold'
+                        ? 'bg-indigo-500/15 text-indigo-300 font-bold'
                         : 'hover:bg-obsidian-700 text-obsidian-text'
                     }`}
                   >
@@ -182,7 +182,7 @@ export default function Navbar({
               title="Cognitive accessibility presets"
               aria-expanded={showPresetsMenu}
             >
-              <Zap className="w-3.5 h-3.5 text-ambergold-400" />
+              <Zap className="w-3.5 h-3.5 text-indigo-400" />
               <span>Presets</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
@@ -190,20 +190,20 @@ export default function Navbar({
               <div className="absolute top-full left-0 mt-1.5 w-64 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 animate-in fade-in">
                 <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1 font-mono">Neurodivergent profiles</div>
                 <button onClick={() => { onApplyPreset('adhd'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
-                  <span className="font-semibold text-ambergold-400">⚡ ADHD Focus</span>
+                  <span className="font-semibold text-indigo-400">⚡ ADHD Focus</span>
                   <span className="block text-[10px] text-obsidian-muted">Bionic saccades + focus ruler</span>
                 </button>
                 <button onClick={() => { onApplyPreset('dyslexia'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
-                  <span className="font-semibold text-ambergold-400">📖 Dyslexia Comfort</span>
+                  <span className="font-semibold text-cyan-400">📖 Dyslexia Comfort</span>
                   <span className="block text-[10px] text-obsidian-muted">OpenDyslexic + wide tracking</span>
                 </button>
                 <button onClick={() => { onApplyPreset('sensory'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
-                  <span className="font-semibold text-ambergold-400">🌿 Sensory Rest</span>
-                  <span className="block text-[10px] text-obsidian-muted">Soft mint tint, reduced contrast glare</span>
+                  <span className="font-semibold text-emerald-400">🌿 Sensory Rest</span>
+                  <span className="block text-[10px] text-obsidian-muted">Soft sage tint, glare reduction</span>
                 </button>
                 <button onClick={() => { onApplyPreset('contrast'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
-                  <span className="font-semibold text-ambergold-400">☀️ High Contrast Gold</span>
-                  <span className="block text-[10px] text-obsidian-muted">17:1 luminance pairing</span>
+                  <span className="font-semibold text-sky-400">☀️ High Contrast</span>
+                  <span className="block text-[10px] text-obsidian-muted">Maximum AAA luminance pairing</span>
                 </button>
                 <div className="border-t border-obsidian-border my-1" />
                 <button onClick={() => { onApplyPreset('default'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700 text-obsidian-muted">
@@ -220,7 +220,7 @@ export default function Navbar({
             title="Toggle Saccadic Bionic Fixation (Alt+B)"
             aria-pressed={bionicEnabled}
           >
-            <Zap className={`w-3.5 h-3.5 ${bionicEnabled ? 'fill-obsidian-900' : 'text-obsidian-muted'}`} />
+            <Zap className={`w-3.5 h-3.5 ${bionicEnabled ? 'fill-white' : 'text-cyan-400'}`} />
             <span>Bionic Read</span>
           </button>
 
@@ -231,26 +231,26 @@ export default function Navbar({
             title="Toggle Focus Reading Ruler (Alt+R)"
             aria-pressed={rulerEnabled}
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 text-cyan-400" />
             <span>Focus Ruler</span>
           </button>
 
-          {/* Audio TTS Playback Pill with Timer [0:00 / 0:38] */}
+          {/* Audio TTS Playback Pill with Timer */}
           <div className={`flex items-center gap-1.5 min-h-[44px] px-2.5 rounded-full border transition-all ${
             ttsState === 'playing'
-              ? 'bg-ambergold-500/15 border-ambergold-500/60 shadow-md shadow-ambergold-500/20'
+              ? 'bg-indigo-500/15 border-indigo-500/60 shadow-md shadow-indigo-500/20'
               : 'bg-obsidian-800 border-obsidian-border'
           }`}>
             {ttsState === 'playing' ? (
-              <button onClick={onPauseTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Pause Speech">
-                <Pause className="w-4 h-4 fill-ambergold-400" />
+              <button onClick={onPauseTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-indigo-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Pause Speech">
+                <Pause className="w-4 h-4 fill-indigo-400" />
               </button>
             ) : ttsState === 'paused' ? (
-              <button onClick={onResumeTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Resume Speech">
-                <Play className="w-4 h-4 fill-ambergold-400" />
+              <button onClick={onResumeTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-indigo-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Resume Speech">
+                <Play className="w-4 h-4 fill-indigo-400" />
               </button>
             ) : (
-              <button onClick={onPlayTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-obsidian-muted hover:text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Play Speech">
+              <button onClick={onPlayTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-obsidian-muted hover:text-cyan-300 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Play Speech">
                 <Play className="w-4 h-4 fill-current" />
               </button>
             )}
@@ -278,7 +278,7 @@ export default function Navbar({
             <select
               value={ttsRate}
               onChange={(e) => onChangeTTSRate(parseFloat(e.target.value))}
-              className="bg-transparent text-[11px] text-ambergold-400 font-bold font-mono px-1 py-1 focus:outline-none cursor-pointer border-l border-obsidian-border/80 ml-0.5"
+              className="bg-transparent text-[11px] text-cyan-400 font-bold font-mono px-1 py-1 focus:outline-none cursor-pointer border-l border-obsidian-border/80 ml-0.5"
               aria-label="Voice Playback Speed"
             >
               <option value={0.75} className="bg-obsidian-800 text-white">0.75x</option>
@@ -297,7 +297,7 @@ export default function Navbar({
               title="Adjust Font, Line Spacing, and Letter Spacing"
               aria-expanded={showTypographyMenu}
             >
-              <Type className="w-3.5 h-3.5 text-ambergold-400" />
+              <Type className="w-3.5 h-3.5 text-cyan-400" />
               <span>Typography</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
@@ -305,7 +305,7 @@ export default function Navbar({
               <div className="absolute top-full right-0 mt-1.5 w-72 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-4 z-50 space-y-3.5 animate-in fade-in">
                 <div className="flex items-center justify-between border-b border-obsidian-border pb-2">
                   <span className="text-xs font-bold text-white uppercase tracking-wider">Typography & Spacing</span>
-                  <span className="text-[10px] text-ambergold-400 font-semibold font-mono">WCAG AAA</span>
+                  <span className="text-[10px] text-cyan-400 font-semibold font-mono">WCAG AAA</span>
                 </div>
                 <div>
                   <label className="block text-[11px] font-medium text-obsidian-muted mb-1" htmlFor="font-family">Font Family</label>
@@ -323,30 +323,30 @@ export default function Navbar({
                 <div>
                   <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Font Size</span>
-                    <span className="font-mono text-ambergold-400">{fontSize}px</span>
+                    <span className="font-mono text-cyan-400">{fontSize}px</span>
                   </div>
-                  <input type="range" min="14" max="28" step="1" value={fontSize} onChange={(e) => onChangeFontSize(parseInt(e.target.value, 10))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Font size" />
+                  <input type="range" min="14" max="28" step="1" value={fontSize} onChange={(e) => onChangeFontSize(parseInt(e.target.value, 10))} className="w-full accent-indigo-500 cursor-pointer" aria-label="Font size" />
                 </div>
                 <div>
                   <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Line Height</span>
-                    <span className="font-mono text-ambergold-400">{lineHeight}</span>
+                    <span className="font-mono text-cyan-400">{lineHeight}</span>
                   </div>
-                  <input type="range" min="1.3" max="2.4" step="0.1" value={lineHeight} onChange={(e) => onChangeLineHeight(parseFloat(e.target.value))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Line height" />
+                  <input type="range" min="1.3" max="2.4" step="0.1" value={lineHeight} onChange={(e) => onChangeLineHeight(parseFloat(e.target.value))} className="w-full accent-indigo-500 cursor-pointer" aria-label="Line height" />
                 </div>
                 <div>
                   <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Letter Spacing</span>
-                    <span className="font-mono text-ambergold-400">{letterSpacing}px</span>
+                    <span className="font-mono text-cyan-400">{letterSpacing}px</span>
                   </div>
-                  <input type="range" min="0" max="4" step="0.5" value={letterSpacing} onChange={(e) => onChangeLetterSpacing(parseFloat(e.target.value))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Letter spacing" />
+                  <input type="range" min="0" max="4" step="0.5" value={letterSpacing} onChange={(e) => onChangeLetterSpacing(parseFloat(e.target.value))} className="w-full accent-indigo-500 cursor-pointer" aria-label="Letter spacing" />
                 </div>
                 <div>
                   <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Word Spacing</span>
-                    <span className="font-mono text-ambergold-400">{wordSpacing}px</span>
+                    <span className="font-mono text-cyan-400">{wordSpacing}px</span>
                   </div>
-                  <input type="range" min="0" max="8" step="1" value={wordSpacing} onChange={(e) => onChangeWordSpacing(parseInt(e.target.value, 10))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Word spacing" />
+                  <input type="range" min="0" max="8" step="1" value={wordSpacing} onChange={(e) => onChangeWordSpacing(parseInt(e.target.value, 10))} className="w-full accent-indigo-500 cursor-pointer" aria-label="Word spacing" />
                 </div>
               </div>
             )}
@@ -357,10 +357,10 @@ export default function Navbar({
             <button
               onClick={() => { setShowThemeMenu((p) => !p); setShowTypographyMenu(false); setShowDocsMenu(false); setShowPresetsMenu(false); }}
               className={menuBtn}
-              title="Change Color Theme & Irlen Tint Overlays"
+              title="Change Color Theme & Overlays"
               aria-expanded={showThemeMenu}
             >
-              <Palette className="w-3.5 h-3.5 text-ambergold-400" />
+              <Palette className="w-3.5 h-3.5 text-indigo-400" />
               <span>Theme</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
@@ -372,14 +372,14 @@ export default function Navbar({
                     key={t.id}
                     onClick={() => { onChangeTheme(t.id); closeMenus(); }}
                     className={`w-full min-h-[44px] flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
-                      theme === t.id ? 'bg-ambergold-500/15 text-ambergold-400 font-bold' : 'hover:bg-obsidian-700 text-obsidian-text'
+                      theme === t.id ? 'bg-indigo-500/15 text-indigo-300 font-bold' : 'hover:bg-obsidian-700 text-obsidian-text'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="w-3.5 h-3.5 rounded-full border border-obsidian-border" style={{ backgroundColor: t.bg }} />
+                      <span className="w-3.5 h-3.5 rounded-full border border-obsidian-border shadow-sm" style={{ backgroundColor: t.bg }} />
                       <span>{t.name}</span>
                     </div>
-                    {theme === t.id && <span className="text-ambergold-400 text-[10px]">✓</span>}
+                    {theme === t.id && <span className="text-indigo-400 text-[10px]">✓</span>}
                   </button>
                 ))}
               </div>
@@ -390,7 +390,7 @@ export default function Navbar({
         {/* Deliverables Button */}
         <button
           onClick={onOpenDeliverablesModal}
-          className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-xs font-bold rounded-full bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20 transition-all active:scale-95"
+          className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-xs font-bold rounded-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white shadow-md shadow-indigo-500/25 transition-all active:scale-95"
           title="View Hackathon Deliverables (Alt+D)"
         >
           <FileText className="w-3.5 h-3.5" />

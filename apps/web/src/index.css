@@ -5,82 +5,102 @@
 @layer base {
   :root,
   .theme-obsidian {
-    --obsidian-950: #07080B;
-    --obsidian-900: #0A0C10;
-    --obsidian-800: #0E1117;
-    --obsidian-700: #141820;
-    --obsidian-600: #1A1F28;
-    --obsidian-text: #F0F6FC;
-    --obsidian-muted: #9AA3B2;
-    --obsidian-accent: #F59E0B;
-    --obsidian-border: #1E232D;
-    --ambergold-400: #FBBF24;
-    --ambergold-500: #F59E0B;
+    --obsidian-950: #06090E;
+    --obsidian-900: #0B0F17;
+    --obsidian-800: #111827;
+    --obsidian-700: #1F2937;
+    --obsidian-600: #374151;
+    --obsidian-text: #F9FAFB;
+    --obsidian-muted: #9CA3AF;
+    --obsidian-border: #1F2937;
+    --brand-primary: #6366F1;
+    --brand-400: #818CF8;
+    --brand-500: #6366F1;
+    --brand-600: #4F46E5;
+    --brand-cyan: #06B6D4;
+    --brand-emerald: #10B981;
+    --bionic-color: #38BDF8;
     --text-white-override: #FFFFFF;
     color-scheme: dark;
   }
 
   .theme-light {
-    --obsidian-950: #EEF2F6;
+    --obsidian-950: #F1F5F9;
     --obsidian-900: #F8FAFC;
     --obsidian-800: #FFFFFF;
     --obsidian-700: #E2E8F0;
     --obsidian-600: #CBD5E1;
     --obsidian-text: #0F172A;
-    --obsidian-muted: #475569;
-    --obsidian-accent: #D97706;
-    --obsidian-border: #CBD5E1;
-    --ambergold-400: #D97706;
-    --ambergold-500: #B45309;
+    --obsidian-muted: #64748B;
+    --obsidian-border: #E2E8F0;
+    --brand-primary: #4F46E5;
+    --brand-400: #6366F1;
+    --brand-500: #4F46E5;
+    --brand-600: #4338CA;
+    --brand-cyan: #0284C7;
+    --brand-emerald: #059669;
+    --bionic-color: #4F46E5;
     --text-white-override: #0F172A;
     color-scheme: light;
   }
 
   .theme-sepia {
-    --obsidian-950: #EFE0C2;
-    --obsidian-900: #FBF0D9;
-    --obsidian-800: #FDF6E6;
-    --obsidian-700: #F4E4C1;
-    --obsidian-600: #DEC49F;
-    --obsidian-text: #2D2319;
-    --obsidian-muted: #6E5C49;
-    --obsidian-accent: #8C4300;
-    --obsidian-border: #DEC49F;
-    --ambergold-400: #B45309;
-    --ambergold-500: #8C4300;
-    --text-white-override: #2D2319;
+    --obsidian-950: #EDE6DC;
+    --obsidian-900: #F6F1EA;
+    --obsidian-800: #FCF9F4;
+    --obsidian-700: #E8DFD3;
+    --obsidian-600: #D8CCC0;
+    --obsidian-text: #2A241F;
+    --obsidian-muted: #6B5F54;
+    --obsidian-border: #E0D5C7;
+    --brand-primary: #9A3412;
+    --brand-400: #C2410C;
+    --brand-500: #9A3412;
+    --brand-600: #7C2D12;
+    --brand-cyan: #0E7490;
+    --brand-emerald: #047857;
+    --bionic-color: #9A3412;
+    --text-white-override: #2A241F;
     color-scheme: light;
   }
 
   .theme-mint {
-    --obsidian-950: #D8F2DE;
-    --obsidian-900: #EBF7EE;
-    --obsidian-800: #F4FBF6;
-    --obsidian-700: #DDF0E2;
-    --obsidian-600: #C2E4CB;
-    --obsidian-text: #132B1A;
-    --obsidian-muted: #3B6B48;
-    --obsidian-accent: #15803D;
-    --obsidian-border: #AFD8B7;
-    --ambergold-400: #15803D;
-    --ambergold-500: #166534;
-    --text-white-override: #132B1A;
+    --obsidian-950: #DFF0E6;
+    --obsidian-900: #EEF8F2;
+    --obsidian-800: #F6FCF8;
+    --obsidian-700: #D8EFE2;
+    --obsidian-600: #BEE3CD;
+    --obsidian-text: #132E1D;
+    --obsidian-muted: #386646;
+    --obsidian-border: #B7DFCA;
+    --brand-primary: #059669;
+    --brand-400: #10B981;
+    --brand-500: #059669;
+    --brand-600: #047857;
+    --brand-cyan: #0891B2;
+    --brand-emerald: #059669;
+    --bionic-color: #047857;
+    --text-white-override: #132E1D;
     color-scheme: light;
   }
 
   .theme-irlen {
-    --obsidian-950: #D5E7FA;
-    --obsidian-900: #E6F0FA;
-    --obsidian-800: #F3F8FD;
-    --obsidian-700: #D8E8F8;
-    --obsidian-600: #BAD7F4;
-    --obsidian-text: #0E2338;
-    --obsidian-muted: #3D5F82;
-    --obsidian-accent: #1D4ED8;
-    --obsidian-border: #AECDF5;
-    --ambergold-400: #1D4ED8;
-    --ambergold-500: #1E40AF;
-    --text-white-override: #0E2338;
+    --obsidian-950: #D8E8FC;
+    --obsidian-900: #EAF2FD;
+    --obsidian-800: #F4F8FE;
+    --obsidian-700: #D3E4FB;
+    --obsidian-600: #B7D5F7;
+    --obsidian-text: #0E2540;
+    --obsidian-muted: #375E8A;
+    --obsidian-border: #ACCFF8;
+    --brand-primary: #2563EB;
+    --brand-400: #3B82F6;
+    --brand-500: #2563EB;
+    --brand-600: #1D4ED8;
+    --brand-cyan: #0284C7;
+    --brand-emerald: #059669;
+    --bionic-color: #1D4ED8;
+    --text-white-override: #0E2540;
     color-scheme: light;
   }
 
@@ -88,20 +108,24 @@
     --obsidian-950: #000000;
     --obsidian-900: #000000;
     --obsidian-800: #0A0A0A;
-    --obsidian-700: #141414;
-    --obsidian-600: #1E1E1E;
-    --obsidian-text: #FFE600;
-    --obsidian-muted: #FFFF88;
-    --obsidian-accent: #FFE600;
-    --obsidian-border: #FFE600;
-    --ambergold-400: #FFE600;
-    --ambergold-500: #FFE600;
-    --text-white-override: #FFE600;
+    --obsidian-700: #171717;
+    --obsidian-600: #262626;
+    --obsidian-text: #FFFFFF;
+    --obsidian-muted: #A3A3A3;
+    --obsidian-border: #404040;
+    --brand-primary: #38BDF8;
+    --brand-400: #38BDF8;
+    --brand-500: #0EA5E9;
+    --brand-600: #0284C7;
+    --brand-cyan: #38BDF8;
+    --brand-emerald: #34D399;
+    --bionic-color: #38BDF8;
+    --text-white-override: #FFFFFF;
     color-scheme: dark;
   }
 
   *:focus-visible {
-    outline: 3px solid var(--ambergold-500) !important;
+    outline: 3px solid var(--brand-500) !important;
     outline-offset: 3px !important;
     border-radius: 4px;
   }
@@ -119,30 +143,29 @@
 .theme-light .text-white,
 .theme-sepia .text-white,
 .theme-mint .text-white,
-.theme-irlen .text-white,
-.theme-contrast .text-white {
+.theme-irlen .text-white {
   color: var(--text-white-override) !important;
 }
 
-/* Saccadic Bionic Reading — tactile anchors */
+/* Saccadic Bionic Reading — clean cyan/indigo anchors */
 .bionic-fixation {
   font-weight: 800 !important;
-  color: var(--ambergold-500);
+  color: var(--bionic-color);
   opacity: 1;
 }
 
 /* Multisensory Karaoke TTS Active Word Animation */
 .karaoke-word-active {
-  background-color: rgba(245, 158, 11, 0.42) !important;
+  background-color: rgba(99, 102, 241, 0.35) !important;
   color: inherit !important;
   padding: 0.1em 0.25em;
   border-radius: 0.25em;
-  box-shadow: 0 0 0 2px var(--ambergold-500);
+  box-shadow: 0 0 0 2px var(--brand-primary);
   transition: all 0.08s ease-in-out;
 }
 
 .theme-contrast .karaoke-word-active {
-  background-color: #00FFFF !important;
+  background-color: #38BDF8 !important;
   color: #000000 !important;
   font-weight: 900 !important;
 }
@@ -153,10 +176,10 @@
   left: 0;
   right: 0;
   top: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.60);
   pointer-events: none;
   z-index: 40;
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(2px);
   transition: height 0.04s linear;
 }
 
@@ -165,10 +188,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.60);
   pointer-events: none;
   z-index: 40;
-  backdrop-filter: blur(1px);
+  backdrop-filter: blur(2px);
   transition: top 0.04s linear;
 }
 
@@ -178,7 +201,7 @@
   right: 0;
   pointer-events: none;
   z-index: 45;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.35);
   transition: top 0.04s linear;
 }
 
@@ -206,7 +229,7 @@
 
 /* ADHD Distractor Floating Animation */
 @keyframes float-distractor {
-  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.8; }
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.85; }
   50% { transform: translateY(-12px) rotate(3deg); opacity: 1; }
 }
 
@@ -221,10 +244,10 @@
 }
 
 .tts-wave-bar {
-  width: 2px;
+  width: 2.5px;
   height: 12px;
   border-radius: 999px;
-  background: var(--ambergold-500);
+  background: var(--brand-cyan);
   transform-origin: center;
   animation: waveform-bar 0.85s ease-in-out infinite;
 }
@@ -241,8 +264,8 @@
 }
 
 @keyframes sensory-pulse {
-  0%, 100% { opacity: 0.18; }
-  50% { opacity: 0.38; }
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.35; }
 }
 
 .sensory-overload-veil {
@@ -254,8 +277,8 @@
   display: block;
   margin-bottom: 0.85em;
   padding: 0.65em 0.85em;
-  border-left: 3px solid var(--ambergold-500);
-  background: rgba(245, 158, 11, 0.06);
+  border-left: 3px solid var(--brand-primary);
+  background: rgba(99, 102, 241, 0.08);
   border-radius: 0 10px 10px 0;
 }
 
@@ -287,10 +310,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(140, 150, 165, 0.4);
+  background: rgba(140, 150, 165, 0.3);
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(140, 150, 165, 0.7);
+  background: rgba(140, 150, 165, 0.6);
 }

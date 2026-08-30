@@ -25,7 +25,6 @@ export default function RulerView({
 }) {
   const [copied, setCopied] = useState(false);
   const [rulerHeight, setRulerHeight] = useState(90);
-  const [opacity, setOpacity] = useState(0.60);
   const [bionicAnchors, setBionicAnchors] = useState(true);
 
   const tokens = parseBionicTokens(sourceText);
@@ -42,7 +41,7 @@ export default function RulerView({
       {/* Header Banner */}
       <div className="mb-6 rounded-2xl bg-obsidian-800 border border-obsidian-border p-5 shadow-bento flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 rounded-xl bg-amber-950/60 border border-amber-700/50 text-amber-400">
+          <div className="p-3 rounded-xl bg-sky-950/60 border border-sky-700/50 text-sky-400">
             <ScanLine className="w-6 h-6" />
           </div>
           <div>
@@ -50,7 +49,7 @@ export default function RulerView({
               <h2 className="text-base font-extrabold text-white">
                 Focus Spotlight & Reading Ruler
               </h2>
-              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-amber-950/90 text-amber-400 border border-amber-700/60">
+              <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-sky-950/90 text-sky-400 border border-sky-700/60">
                 ADHD Tracking Anchor
               </span>
             </div>
@@ -67,16 +66,16 @@ export default function RulerView({
           <div className="flex items-center gap-2 bg-obsidian-900 border border-obsidian-border px-3 py-1.5 rounded-xl text-xs font-mono">
             <span className="text-obsidian-muted">Slit Height:</span>
             <button onClick={() => setRulerHeight(h => Math.max(40, h - 10))} className="p-1 hover:text-white"><Minus className="w-3 h-3" /></button>
-            <span className="font-bold text-ambergold-400">{rulerHeight}px</span>
+            <span className="font-bold text-cyan-400">{rulerHeight}px</span>
             <button onClick={() => setRulerHeight(h => Math.min(160, h + 10))} className="p-1 hover:text-white"><Plus className="w-3 h-3" /></button>
           </div>
 
           {/* Bionic Toggle */}
           <button
             onClick={() => setBionicAnchors(b => !b)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold border transition ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold border transition ${
               bionicAnchors
-                ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400'
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-500/20'
                 : 'bg-obsidian-700 text-obsidian-muted border-obsidian-border'
             }`}
           >
@@ -100,7 +99,7 @@ export default function RulerView({
         
         <div className="flex items-center justify-between pb-3 border-b border-obsidian-border mb-4">
           <span className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-            <Eye className="w-3.5 h-3.5 text-ambergold-400" />
+            <Eye className="w-3.5 h-3.5 text-cyan-400" />
             Distraction-Free Reading Canvas
           </span>
           <span className="text-xs font-mono text-obsidian-muted">
@@ -126,7 +125,7 @@ export default function RulerView({
                 {token.leadingPunct}
                 {bionicAnchors ? (
                   <>
-                    <b className="font-extrabold text-ambergold-400">{token.boldPart}</b>
+                    <b className="font-extrabold text-cyan-400">{token.boldPart}</b>
                     <span>{token.restPart}</span>
                   </>
                 ) : (

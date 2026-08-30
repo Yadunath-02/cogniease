@@ -64,7 +64,7 @@ export default function VoiceSuiteView({
         </div>
 
         {/* Global Controls Deck */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           
           {/* STT Dictate Toggle */}
           <button
@@ -83,7 +83,7 @@ export default function VoiceSuiteView({
           {ttsState === 'playing' ? (
             <button
               onClick={onPauseTTS}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-ambergold-500 text-obsidian-900 shadow-md shadow-ambergold-500/25"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/25"
             >
               <Pause className="w-4 h-4 fill-current" />
               <span>Pause Speech</span>
@@ -91,7 +91,7 @@ export default function VoiceSuiteView({
           ) : ttsState === 'paused' ? (
             <button
               onClick={onResumeTTS}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-ambergold-500 text-obsidian-900 shadow-md shadow-ambergold-500/25"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/25"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>Resume Speech</span>
@@ -99,7 +99,7 @@ export default function VoiceSuiteView({
           ) : (
             <button
               onClick={onPlayTTS}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/25 transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold font-mono bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-500/25 transition-all"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>Listen Aloud (TTS)</span>
@@ -122,13 +122,13 @@ export default function VoiceSuiteView({
             <select
               value={ttsRate}
               onChange={(e) => onChangeTTSRate(parseFloat(e.target.value))}
-              className="bg-transparent text-ambergold-400 font-bold focus:outline-none cursor-pointer"
+              className="bg-transparent text-cyan-400 font-bold focus:outline-none cursor-pointer"
             >
-              <option value="0.75" className="bg-obsidian-800">0.75x</option>
-              <option value="1.0" className="bg-obsidian-800">1.0x</option>
-              <option value="1.25" className="bg-obsidian-800">1.25x</option>
-              <option value="1.5" className="bg-obsidian-800">1.5x</option>
-              <option value="2.0" className="bg-obsidian-800">2.0x</option>
+              <option value="0.75" className="bg-obsidian-800 text-white">0.75x</option>
+              <option value="1.0" className="bg-obsidian-800 text-white">1.0x</option>
+              <option value="1.25" className="bg-obsidian-800 text-white">1.25x</option>
+              <option value="1.5" className="bg-obsidian-800 text-white">1.5x</option>
+              <option value="2.0" className="bg-obsidian-800 text-white">2.0x</option>
             </select>
           </div>
 
@@ -169,7 +169,7 @@ export default function VoiceSuiteView({
         {/* Right Column: Live Karaoke Audio Highlighting Reader */}
         <div className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento flex flex-col h-[580px]">
           <div className="flex items-center justify-between pb-3 border-b border-obsidian-border mb-3">
-            <span className="text-xs font-mono font-bold text-ambergold-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
               <Volume2 className="w-3.5 h-3.5" />
               Karaoke Word-by-Word Synchronizer
             </span>
@@ -197,7 +197,7 @@ export default function VoiceSuiteView({
                   }`}
                 >
                   {token.leadingPunct}
-                  <b className="font-extrabold text-ambergold-400">{token.boldPart}</b>
+                  <b className="font-extrabold text-cyan-400">{token.boldPart}</b>
                   <span>{token.restPart}</span>
                   {token.trailingPunct}
                 </span>
@@ -206,7 +206,7 @@ export default function VoiceSuiteView({
           </div>
 
           <div className="mt-3 flex items-center justify-between pt-3 border-t border-obsidian-border text-[11px] font-mono text-obsidian-muted">
-            <span className="flex items-center gap-1.5 text-ambergold-400 font-bold">
+            <span className="flex items-center gap-1.5 text-cyan-400 font-bold">
               <Sparkles className="w-3.5 h-3.5" /> Multisensory Audio-Visual Anchor Active
             </span>
             <span>Status: {ttsState.toUpperCase()}</span>

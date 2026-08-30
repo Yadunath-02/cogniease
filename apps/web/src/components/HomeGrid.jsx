@@ -26,11 +26,11 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
       title: 'Bionic Reading Engine',
       subtitle: 'Saccadic eye-anchoring & fixation guidance for ADHD & Dyslexia',
       icon: Zap,
-      iconColor: 'text-ambergold-400',
+      iconColor: 'text-cyan-400',
       badge: 'Saccadic Fixation',
-      badgeColor: 'bg-ambergold-500/15 text-ambergold-400 border-ambergold-500/40',
+      badgeColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
       tag: 'Speed +35%',
-      isSpecial: true
+      glowColor: 'bg-cyan-500/5 group-hover:bg-cyan-500/10'
     },
     {
       id: 'simplifier',
@@ -39,28 +39,31 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
       icon: Sparkles,
       iconColor: 'text-emerald-400',
       badge: 'De-Jargonizer',
-      badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40',
-      tag: 'Grade 5-8'
+      badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+      tag: 'Grade 5-8',
+      glowColor: 'bg-emerald-500/5 group-hover:bg-emerald-500/10'
     },
     {
       id: 'voice',
       title: 'Voice Suite (TTS & STT)',
       subtitle: 'High-speed audio reader with real-time Speech-to-Text dictation',
       icon: Mic,
-      iconColor: 'text-cyan-400',
+      iconColor: 'text-indigo-400',
       badge: 'Multisensory Audio',
-      badgeColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/40',
-      tag: 'Karaoke Sync'
+      badgeColor: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
+      tag: 'Karaoke Sync',
+      glowColor: 'bg-indigo-500/5 group-hover:bg-indigo-500/10'
     },
     {
       id: 'ruler',
       title: 'Focus Spotlight Ruler',
       subtitle: 'Peripheral noise reduction slit tracking your cursor position',
       icon: ScanLine,
-      iconColor: 'text-amber-400',
+      iconColor: 'text-sky-400',
       badge: 'ADHD Anchor',
-      badgeColor: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
-      tag: '60% Dimming'
+      badgeColor: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
+      tag: '60% Dimming',
+      glowColor: 'bg-sky-500/5 group-hover:bg-sky-500/10'
     },
     {
       id: 'sandbox',
@@ -69,18 +72,20 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
       icon: Brain,
       iconColor: 'text-purple-400',
       badge: 'Empathy Engine',
-      badgeColor: 'bg-purple-500/15 text-purple-400 border-purple-500/40',
-      tag: 'Simulations'
+      badgeColor: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+      tag: 'Simulations',
+      glowColor: 'bg-purple-500/5 group-hover:bg-purple-500/10'
     },
     {
       id: 'deliverables',
       title: 'Research & Deliverables',
       subtitle: 'WCAG 2.2 AAA audits, prompt logs, and neurodiversity specs',
       icon: FileText,
-      iconColor: 'text-indigo-400',
+      iconColor: 'text-teal-400',
       badge: 'THRIVE 26',
-      badgeColor: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/40',
+      badgeColor: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
       tag: 'Audits & Prompts',
+      glowColor: 'bg-teal-500/5 group-hover:bg-teal-500/10',
       onClick: onOpenDeliverables
     }
   ];
@@ -93,7 +98,7 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
         
         {/* Brand Icon + Name Badge */}
         <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-obsidian-800/90 border border-obsidian-border shadow-sm mb-6 backdrop-blur-md">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-ambergold-600 to-ambergold-400 flex items-center justify-center text-obsidian-900 font-black text-xs">
+          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 flex items-center justify-center text-white font-black text-xs">
             CE
           </div>
           <span className="font-extrabold text-sm tracking-tight text-white">
@@ -103,7 +108,7 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
           <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-700/60">
             [WCAG 2.2 AAA]
           </span>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-ambergold-500/15 text-ambergold-400 border border-ambergold-500/40">
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
             [Neurodiversity Engine]
           </span>
         </div>
@@ -111,7 +116,7 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
         {/* Tagline */}
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
           A collection of cognitive accessibility tools for when reading and decoding feel{' '}
-          <span className="bg-gradient-to-r from-ambergold-400 via-yellow-200 to-emerald-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
             too overwhelming.
           </span>
         </h1>
@@ -137,14 +142,14 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
                   onSelectView(tool.id);
                 }
               }}
-              className="text-left p-6 rounded-2xl bg-obsidian-800/80 hover:bg-obsidian-800 border border-obsidian-border hover:border-ambergold-500/60 transition-all flex flex-col justify-between group hover:-translate-y-1.5 duration-200 shadow-bento relative overflow-hidden"
+              className="text-left p-6 rounded-2xl bg-obsidian-800/80 hover:bg-obsidian-800 border border-obsidian-border hover:border-indigo-500/60 transition-all flex flex-col justify-between group hover:-translate-y-1.5 duration-200 shadow-bento relative overflow-hidden"
             >
               {/* Subtle accent hover glow */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-ambergold-500/5 rounded-full blur-2xl group-hover:bg-ambergold-500/10 transition-colors pointer-events-none" />
+              <div className={`absolute top-0 right-0 w-32 h-32 ${tool.glowColor} rounded-full blur-2xl transition-colors pointer-events-none`} />
 
               <div>
                 <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="p-3 rounded-xl bg-obsidian-900 border border-obsidian-border group-hover:border-ambergold-500/50 transition-colors shadow-inner">
+                  <div className="p-3 rounded-xl bg-obsidian-900 border border-obsidian-border group-hover:border-indigo-500/50 transition-colors shadow-inner">
                     <Icon className={`w-6 h-6 ${tool.iconColor}`} />
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -154,7 +159,7 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
                   </div>
                 </div>
 
-                <h2 className="text-base font-bold text-white mb-2 group-hover:text-ambergold-400 transition-colors">
+                <h2 className="text-base font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
                   {tool.title}
                 </h2>
 
@@ -164,7 +169,7 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
               </div>
 
               <div className="pt-3 border-t border-obsidian-border/80 flex items-center justify-between text-xs font-mono font-bold">
-                <span className="text-ambergold-400 group-hover:underline">
+                <span className="text-indigo-400 group-hover:text-indigo-300 group-hover:underline">
                   {isModalTrigger ? 'View Documentation →' : 'Launch Tool Workspace →'}
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-obsidian-900 border border-obsidian-border text-obsidian-muted group-hover:text-white">
@@ -183,11 +188,11 @@ export default function HomeGrid({ onSelectView, onOpenDeliverables }) {
           <span>7:1 AAA Contrast Ratios</span>
         </div>
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-ambergold-400" />
+          <CheckCircle2 className="w-4 h-4 text-cyan-400" />
           <span>Saccadic Bionic Fixation Curve</span>
         </div>
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-cyan-400" />
+          <CheckCircle2 className="w-4 h-4 text-indigo-400" />
           <span>Chromium-Resilient TTS + STT</span>
         </div>
         <div className="flex items-center gap-2">

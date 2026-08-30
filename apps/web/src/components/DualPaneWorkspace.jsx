@@ -124,7 +124,7 @@ export default function DualPaneWorkspace({
       <span className="syllable-breakdown font-medium">
         {token.boldPart}
         {token.restPart}
-        <span className="text-[10px] text-ambergold-400/80 align-super ml-0.5 font-mono">
+        <span className="text-[10px] text-cyan-400/90 align-super ml-0.5 font-mono">
           [{countSyllables(token.cleanWord)}]
         </span>
       </span>
@@ -165,10 +165,10 @@ export default function DualPaneWorkspace({
     if (!sourceText.trim()) {
       return (
         <div className="flex flex-col items-center justify-center py-20 text-center text-obsidian-muted">
-          <BookOpen className="w-12 h-12 mb-3 stroke-[1.5]" />
+          <BookOpen className="w-12 h-12 mb-3 stroke-[1.5] text-obsidian-muted" />
           <p className="font-semibold text-sm">No text entered yet</p>
           <p className="text-xs mt-1 max-w-sm">
-            Type, dictate with your microphone, or choose a preset legal, medical, or technical excerpt on the left.
+            Type, dictate with your microphone, or choose a preset document on the left.
           </p>
         </div>
       );
@@ -238,18 +238,6 @@ export default function DualPaneWorkspace({
     }
   };
 
-  const getThemeClasses = () => {
-    switch (theme) {
-      case 'light': return 'bg-white text-gray-900 border-gray-200';
-      case 'sepia': return 'bg-[#FBF0D9] text-[#2D2319] border-[#E2CC9C]';
-      case 'mint': return 'bg-[#EBF7EE] text-[#132B1A] border-[#BBE0C7]';
-      case 'irlen': return 'bg-[#E6F0FA] text-[#0E2338] border-[#A8CBF0]';
-      case 'contrast': return 'bg-black text-[#FFE600] border-[#FFE600]';
-      case 'obsidian':
-      default: return 'bg-obsidian-800 text-obsidian-text border-obsidian-border';
-    }
-  };
-
   const grade = readabilityMetrics.fleschKincaidGrade;
   const gradeBar = Math.min(100, (grade / 20) * 100);
   const ease = readabilityMetrics.fleschReadingEase;
@@ -257,10 +245,10 @@ export default function DualPaneWorkspace({
   const complexBar = Math.min(100, readabilityMetrics.complexWordPercentage);
 
   const tabClass = (id) =>
-    `min-h-[44px] px-3 py-2 text-[11px] font-bold rounded-lg border transition ${
+    `min-h-[40px] px-3.5 py-1.5 text-xs font-bold rounded-lg border transition ${
       surfaceMode === id
-        ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-sm'
-        : 'bg-black/20 border-current/20 hover:bg-black/30'
+        ? 'bg-indigo-600 border-indigo-500 text-white shadow-md shadow-indigo-500/25'
+        : 'bg-obsidian-800/60 border-obsidian-border hover:bg-obsidian-700 text-obsidian-text'
     }`;
 
   return (
@@ -274,21 +262,21 @@ export default function DualPaneWorkspace({
           <div className="flex items-start justify-between gap-2">
             <div>
               <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Grade Level</p>
-              <p className="mt-1 font-mono text-2xl font-bold text-ambergold-400">Grade {grade}</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-cyan-400">Grade {grade}</p>
             </div>
-            <Gauge className="w-4 h-4 text-ambergold-500 mt-1" aria-hidden="true" />
+            <Gauge className="w-4 h-4 text-cyan-400 mt-1" aria-hidden="true" />
           </div>
           <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border font-mono ${
             readabilityMetrics.difficultyLevel === 'easy' || readabilityMetrics.difficultyLevel === 'accessible'
               ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
               : readabilityMetrics.difficultyLevel === 'extreme' || readabilityMetrics.difficultyLevel === 'difficult'
               ? 'bg-rose-950/80 text-rose-300 border-rose-700'
-              : 'bg-ambergold-500/15 text-ambergold-400 border-ambergold-500/40'
+              : 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30'
           }`}>
             {grade >= 14 ? 'Academic Jargon' : readabilityMetrics.difficultyRating.split('(')[0].trim()}
           </span>
-          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
-            <div className={`h-full rounded-full ${grade >= 14 ? 'bg-rose-500' : grade >= 10 ? 'bg-ambergold-500' : 'bg-emerald-500'}`} style={{ width: `${gradeBar}%` }} />
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-700 overflow-hidden" aria-hidden="true">
+            <div className={`h-full rounded-full ${grade >= 14 ? 'bg-rose-500' : grade >= 10 ? 'bg-indigo-500' : 'bg-emerald-500'}`} style={{ width: `${gradeBar}%` }} />
           </div>
         </article>
 
@@ -298,18 +286,18 @@ export default function DualPaneWorkspace({
           <p className="mt-1 font-mono text-2xl font-bold text-obsidian-text">
             {ease} <span className="text-sm text-obsidian-muted">/ 100</span>
           </p>
-          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
-            <div className={`h-full rounded-full ${ease >= 70 ? 'bg-emerald-500' : ease >= 50 ? 'bg-ambergold-500' : 'bg-rose-500'}`} style={{ width: `${easeBar}%` }} />
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-700 overflow-hidden" aria-hidden="true">
+            <div className={`h-full rounded-full ${ease >= 70 ? 'bg-emerald-500' : ease >= 50 ? 'bg-indigo-500' : 'bg-rose-500'}`} style={{ width: `${easeBar}%` }} />
           </div>
         </article>
 
         {/* 3. Complex & Jargon Words Card */}
         <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
           <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Complex & Jargon Words</p>
-          <p className="mt-1 font-mono text-2xl font-bold text-ambergold-400">{readabilityMetrics.complexWordPercentage}%</p>
+          <p className="mt-1 font-mono text-2xl font-bold text-indigo-400">{readabilityMetrics.complexWordPercentage}%</p>
           <p className="text-[11px] text-obsidian-muted mt-1 font-mono">{readabilityMetrics.complexWordCount} of {readabilityMetrics.wordCount} words ≥ 3 syllables</p>
-          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
-            <div className="h-full rounded-full bg-ambergold-600" style={{ width: `${complexBar}%` }} />
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-700 overflow-hidden" aria-hidden="true">
+            <div className="h-full rounded-full bg-indigo-500" style={{ width: `${complexBar}%` }} />
           </div>
         </article>
 
@@ -325,9 +313,9 @@ export default function DualPaneWorkspace({
             <TrendingDown className="w-4 h-4 text-emerald-400 mt-1" aria-hidden="true" />
           </div>
           <p className="text-[11px] text-obsidian-muted mt-1">
-            {bionicEnabled ? 'Gold-weighted prefixes reduce eye fatigue' : 'Enable Bionic Read to reduce saccades'}
+            {bionicEnabled ? 'Fixation anchors eliminate saccadic eye wander' : 'Enable Bionic Read to reduce saccades'}
           </p>
-          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-700 overflow-hidden" aria-hidden="true">
             <div className="h-full rounded-full bg-emerald-500" style={{ width: `${saccadicReduction}%` }} />
           </div>
         </article>
@@ -344,7 +332,7 @@ export default function DualPaneWorkspace({
           {/* Header Bar */}
           <div className="flex items-center justify-between pb-3 border-b border-obsidian-border gap-2 flex-wrap">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-ambergold-400" />
+              <FileText className="w-4 h-4 text-cyan-400" />
               <h3 id="raw-source-heading" className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                 Source Document
               </h3>
@@ -357,7 +345,7 @@ export default function DualPaneWorkspace({
                   setPlainLanguageActive(false);
                 }}
                 className="min-h-[40px] bg-obsidian-700 text-xs text-white rounded-lg px-2.5 py-1 border border-obsidian-border max-w-[210px] truncate cursor-pointer font-mono"
-                aria-label="Load preloaded complex sample text"
+                aria-label="Load preloaded sample text"
               >
                 {SAMPLE_TEXTS.map((s) => (
                   <option key={s.id} value={s.id}>{s.title}</option>
@@ -391,7 +379,7 @@ export default function DualPaneWorkspace({
                 className={`flex items-center gap-1.5 min-h-[44px] px-3.5 py-1.5 rounded-lg font-bold border transition-all ${
                   plainLanguageActive
                     ? 'bg-emerald-600 border-emerald-400 text-white'
-                    : 'bg-ambergold-500 hover:bg-ambergold-400 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20'
+                    : 'bg-indigo-600 hover:bg-indigo-500 border-indigo-500 text-white shadow-md shadow-indigo-500/25'
                 }`}
                 title="Decompress complex jargon into plain English Grade 6-8"
               >
@@ -445,19 +433,19 @@ export default function DualPaneWorkspace({
 
         {/* RIGHT PANE: ADAPTIVE READING SURFACE */}
         <section
-          className={`relative rounded-2xl border p-5 shadow-bento flex flex-col h-[650px] transition-colors duration-200 overflow-hidden ${getThemeClasses()}`}
+          className="relative rounded-2xl border border-obsidian-border bg-obsidian-800 p-5 shadow-bento flex flex-col h-[650px] transition-colors duration-200 overflow-hidden"
           aria-labelledby="accessible-render-heading"
         >
           {activePersona === 'adhd' && (
             <>
               <div className="absolute top-16 right-8 bg-purple-950/80 border border-purple-500 text-purple-200 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20">
-                💭 Did I respond to that Slack message?
+                💭 Did I respond to that message?
               </div>
-              <div className="absolute bottom-20 left-8 bg-ambergold-500/20 border border-ambergold-500 text-ambergold-400 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '1.5s' }}>
-                🔔 Phone buzzes in another room
+              <div className="absolute bottom-20 left-8 bg-indigo-500/20 border border-indigo-500 text-indigo-300 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '1.5s' }}>
+                🔔 Phone notifications buzz
               </div>
               <div className="absolute top-1/2 right-10 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '2.5s' }}>
-                🧠 What was the first sentence again?
+                🧠 What was the first sentence?
               </div>
             </>
           )}
@@ -465,10 +453,10 @@ export default function DualPaneWorkspace({
             <div className="sensory-overload-veil absolute inset-0 pointer-events-none z-10 bg-white mix-blend-overlay" aria-hidden="true" />
           )}
 
-          <div className="flex flex-col gap-3 pb-3 border-b border-current/20 relative z-10">
+          <div className="flex flex-col gap-3 pb-3 border-b border-obsidian-border relative z-10">
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-ambergold-500" />
+                <Sparkles className="w-4 h-4 text-cyan-400" />
                 <h3 id="accessible-render-heading" className="text-xs font-bold uppercase tracking-wider font-mono">
                   Adaptive Reading Surface
                 </h3>
@@ -476,10 +464,10 @@ export default function DualPaneWorkspace({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowSyllables((prev) => !prev)}
-                  className={`min-h-[44px] px-2.5 py-1 text-xs font-bold rounded-lg border transition ${
+                  className={`min-h-[40px] px-3 py-1 text-xs font-bold rounded-lg border transition ${
                     showSyllables
-                      ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400 font-bold'
-                      : 'bg-black/10 hover:bg-black/20 border-current/20'
+                      ? 'bg-indigo-600 text-white border-indigo-500'
+                      : 'bg-obsidian-700 hover:bg-obsidian-600 border-obsidian-border text-obsidian-text'
                   }`}
                   title="Toggle syllable markers"
                 >
@@ -487,7 +475,7 @@ export default function DualPaneWorkspace({
                 </button>
                 <button
                   onClick={onPlayTTS}
-                  className="flex items-center gap-1 min-h-[44px] px-3 py-1 text-xs font-bold rounded-lg bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 transition shadow-sm"
+                  className="flex items-center gap-1.5 min-h-[40px] px-3.5 py-1 text-xs font-bold rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition shadow-sm"
                   title="Listen aloud with word-by-word karaoke highlight"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
@@ -495,15 +483,15 @@ export default function DualPaneWorkspace({
                 </button>
                 <button
                   onClick={handleCopy}
-                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
+                  className="flex items-center gap-1 min-h-[40px] px-3 py-1 text-xs font-semibold rounded-lg bg-obsidian-700 hover:bg-obsidian-600 border border-obsidian-border transition text-obsidian-text"
                   title="Copy adapted text"
                 >
-                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{copied ? 'Copied' : 'Copy'}</span>
                 </button>
                 <button
                   onClick={handleExportPDF}
-                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
+                  className="flex items-center gap-1 min-h-[40px] px-3 py-1 text-xs font-semibold rounded-lg bg-obsidian-700 hover:bg-obsidian-600 border border-obsidian-border transition text-obsidian-text"
                   title="Export or print clean PDF"
                 >
                   <Printer className="w-3.5 h-3.5" />
@@ -541,14 +529,14 @@ export default function DualPaneWorkspace({
             {renderInteractiveContent()}
           </div>
 
-          <div className="flex items-center justify-between pt-3 border-t border-current/20 text-[11px] opacity-80 relative z-10">
+          <div className="flex items-center justify-between pt-3 border-t border-obsidian-border text-[11px] opacity-80 relative z-10">
             <div className="flex items-center gap-2 flex-wrap">
               <Layers className="w-3.5 h-3.5" />
               <span className="font-bold font-mono">Surface:</span>
-              <span className="font-mono">{surfaceMode === 'chunks' ? 'Sentence Chunks' : surfaceMode === 'plain' ? 'Plain English' : 'Bionic Anchors'}</span>
+              <span className="font-mono text-cyan-400">{surfaceMode === 'chunks' ? 'Sentence Chunks' : surfaceMode === 'plain' ? 'Plain English' : 'Bionic Anchors'}</span>
               {showSyllables && <span>• Syllables</span>}
               {activePersona && (
-                <span className="flex items-center gap-1 text-ambergold-500 font-mono font-bold">
+                <span className="flex items-center gap-1 text-indigo-400 font-mono font-bold">
                   <Eye className="w-3 h-3" /> {activePersona}
                 </span>
               )}

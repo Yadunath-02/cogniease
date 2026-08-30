@@ -25,10 +25,10 @@ export default function HeroSection({
       id: 'bionic',
       title: 'Bionic Saccadic Engine',
       icon: Zap,
-      iconColor: 'text-ambergold-400',
-      badge: 'Cognitive Eye-Tracking',
-      badgeColor: 'bg-ambergold-500/15 text-ambergold-400 border-ambergold-500/40',
-      desc: 'Guided eye-fixation reading with real-time syllable detection and gold-weighted glyph anchors to eliminate tracking fatigue.',
+      iconColor: 'text-cyan-400',
+      badge: 'Eye-Tracking',
+      badgeColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+      desc: 'Guided eye-fixation reading with real-time syllable detection and cyan-weighted glyph anchors to eliminate tracking fatigue.',
       actionText: bionicEnabled ? 'Active in Workspace ✓' : 'Launch Bionic Mode →',
       active: bionicEnabled
     },
@@ -36,9 +36,9 @@ export default function HeroSection({
       id: 'voice',
       title: 'Voice Suite (TTS & STT)',
       icon: Headphones,
-      iconColor: 'text-cyan-400',
-      badge: 'Multisensory Audio',
-      badgeColor: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/40',
+      iconColor: 'text-indigo-400',
+      badge: 'Audio Suite',
+      badgeColor: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
       desc: 'High-precision Web Speech TTS with word-by-word karaoke highlighting plus live hands-free browser Speech-to-Text dictation.',
       actionText: ttsState === 'playing' || isRecording ? 'Audio Active 🎙️' : 'Launch Voice Suite →',
       active: ttsState === 'playing' || isRecording
@@ -48,8 +48,8 @@ export default function HeroSection({
       title: 'AI Plain-Language Simplifier',
       icon: Wand2,
       iconColor: 'text-emerald-400',
-      badge: 'De-Jargon Engine',
-      badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/40',
+      badge: 'De-Jargonizer',
+      badgeColor: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
       desc: 'Instantly decompresses dense multi-clause legal contracts, clinical abstracts, and RFCs into Grade 6–8 plain-language summaries.',
       actionText: 'Simplify Jargon →',
       active: false
@@ -58,9 +58,9 @@ export default function HeroSection({
       id: 'ruler',
       title: 'Focus Spotlight & Ruler',
       icon: Eye,
-      iconColor: 'text-amber-400',
-      badge: 'ADHD Attention Mask',
-      badgeColor: 'bg-amber-500/15 text-amber-400 border-amber-500/40',
+      iconColor: 'text-sky-400',
+      badge: 'ADHD Anchor',
+      badgeColor: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
       desc: 'Dims peripheral visual distractions with a 60% opacity backdrop blur, isolating active lines to eliminate line-skipping errors.',
       actionText: rulerEnabled ? 'Ruler Active ✓' : 'Launch Spotlight Ruler →',
       active: rulerEnabled
@@ -71,7 +71,7 @@ export default function HeroSection({
       icon: Layers,
       iconColor: 'text-purple-400',
       badge: 'Empathy Engine',
-      badgeColor: 'bg-purple-500/15 text-purple-400 border-purple-500/40',
+      badgeColor: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
       desc: 'Interactive testing ground simulating Dyslexic character-drift, ADHD wandering thoughts, and Irlen visual photophobia glare.',
       actionText: 'Open Sandbox →',
       active: false
@@ -82,7 +82,7 @@ export default function HeroSection({
     <section className="relative pt-8 pb-12 px-4 border-b border-obsidian-border bg-gradient-to-b from-obsidian-950 via-obsidian-900 to-obsidian-900 overflow-hidden">
       
       {/* Decorative Glow Backdrop */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-gradient-to-b from-ambergold-500/10 via-indigo-500/5 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[300px] bg-gradient-to-b from-indigo-500/10 via-cyan-500/5 to-transparent blur-3xl pointer-events-none" />
 
       <div className="max-w-[1440px] mx-auto relative z-10">
         
@@ -90,7 +90,7 @@ export default function HeroSection({
         <div className="text-center max-w-3xl mx-auto mb-10">
           
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-obsidian-800/90 border border-obsidian-border shadow-sm mb-4 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5 text-ambergold-400" />
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span className="text-[11px] font-bold font-mono text-white tracking-wide">
               ✦ AI & Cognitive Accessibility Studio
             </span>
@@ -101,7 +101,7 @@ export default function HeroSection({
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white mb-4 leading-tight">
             Cognitive Freedom for{' '}
-            <span className="bg-gradient-to-r from-ambergold-400 via-yellow-200 to-emerald-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
               Every Mind.
             </span>
           </h1>
@@ -121,13 +121,13 @@ export default function HeroSection({
                 onClick={() => onLaunchTool(tool.id)}
                 className={`text-left p-4 rounded-2xl border transition-all flex flex-col justify-between group hover:-translate-y-1 duration-200 shadow-bento ${
                   tool.active
-                    ? 'bg-obsidian-800/95 border-ambergold-500/80 shadow-focus-aaa'
-                    : 'bg-obsidian-800/60 hover:bg-obsidian-800 border-obsidian-border hover:border-ambergold-500/50'
+                    ? 'bg-obsidian-800/95 border-indigo-500/80 shadow-focus-aaa'
+                    : 'bg-obsidian-800/60 hover:bg-obsidian-800 border-obsidian-border hover:border-indigo-500/50'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <div className={`p-2.5 rounded-xl bg-obsidian-900 border border-obsidian-border group-hover:border-ambergold-500/50 transition-colors shadow-inner`}>
+                    <div className="p-2.5 rounded-xl bg-obsidian-900 border border-obsidian-border group-hover:border-indigo-500/50 transition-colors shadow-inner">
                       <Icon className={`w-5 h-5 ${tool.iconColor}`} />
                     </div>
                     <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border ${tool.badgeColor}`}>
@@ -135,7 +135,7 @@ export default function HeroSection({
                     </span>
                   </div>
 
-                  <h3 className="text-sm font-bold text-white mb-1.5 group-hover:text-ambergold-400 transition-colors">
+                  <h3 className="text-sm font-bold text-white mb-1.5 group-hover:text-indigo-300 transition-colors">
                     {tool.title}
                   </h3>
 
@@ -145,7 +145,7 @@ export default function HeroSection({
                 </div>
 
                 <div className="pt-2 border-t border-obsidian-border/70 flex items-center justify-between text-xs font-mono font-bold">
-                  <span className={tool.active ? 'text-ambergold-400' : 'text-gray-300 group-hover:text-white'}>
+                  <span className={tool.active ? 'text-indigo-400' : 'text-gray-300 group-hover:text-white'}>
                     {tool.actionText}
                   </span>
                   <span className="text-obsidian-muted group-hover:translate-x-1 transition-transform">
@@ -160,7 +160,7 @@ export default function HeroSection({
         {/* Scroll Indicator Prompt */}
         <div className="mt-8 flex items-center justify-center gap-2 text-[11px] font-mono font-semibold text-obsidian-muted select-none">
           <span>Active Cognitive Workspace Below</span>
-          <ArrowDown className="w-3.5 h-3.5 animate-bounce text-ambergold-400" />
+          <ArrowDown className="w-3.5 h-3.5 animate-bounce text-cyan-400" />
         </div>
 
       </div>

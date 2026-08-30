@@ -5,7 +5,7 @@ import { Minus, Plus, X, MoveVertical } from 'lucide-react';
  * ReadingRuler Component
  * 
  * Provides an interactive visual tracking anchor following the user's cursor
- * or keyboard arrows. Bounded by tactile amber lines, dimming the background
+ * or keyboard arrows. Bounded by sleek Cyan/Indigo lines, dimming the background
  * to 60% opacity with backdrop blur to prevent vertical line skipping.
  */
 export default function ReadingRuler({
@@ -17,7 +17,7 @@ export default function ReadingRuler({
   const [positionY, setPositionY] = useState(300);
   const [rulerHeight, setRulerHeight] = useState(90); // 90px slit
   const [opacity, setOpacity] = useState(0.60); // 60% opacity dimming
-  const [tintColor, setTintColor] = useState('amber'); // 'amber' | 'blue' | 'mint'
+  const [tintColor, setTintColor] = useState('cyan'); // 'cyan' | 'indigo' | 'emerald'
 
   // Mouse, Touch & Keyboard Tracking
   useEffect(() => {
@@ -59,19 +59,19 @@ export default function ReadingRuler({
 
   const getBorderColor = () => {
     switch (tintColor) {
-      case 'blue': return '#38BDF8';
-      case 'mint': return '#34D399';
-      case 'amber':
-      default: return '#F59E0B';
+      case 'indigo': return '#818CF8';
+      case 'emerald': return '#34D399';
+      case 'cyan':
+      default: return '#38BDF8';
     }
   };
 
   const getGuideBg = () => {
     switch (tintColor) {
-      case 'blue': return 'rgba(56, 189, 248, 0.08)';
-      case 'mint': return 'rgba(52, 211, 153, 0.08)';
-      case 'amber':
-      default: return 'rgba(245, 158, 11, 0.08)';
+      case 'indigo': return 'rgba(99, 102, 241, 0.08)';
+      case 'emerald': return 'rgba(16, 185, 129, 0.08)';
+      case 'cyan':
+      default: return 'rgba(56, 189, 248, 0.08)';
     }
   };
 
@@ -98,7 +98,7 @@ export default function ReadingRuler({
             }}
             aria-hidden="true"
           />
-          {/* 90px Spotlight Slit with Amber Borders */}
+          {/* 90px Spotlight Slit with Cyan/Indigo Borders */}
           <div
             className="fixed left-0 right-0 pointer-events-none z-40 border-y-2 transition-all duration-75 shadow-ruler-glow"
             style={{
@@ -119,7 +119,7 @@ export default function ReadingRuler({
           style={{
             top: `${positionY - rulerHeight / 2}px`,
             height: `${rulerHeight}px`,
-            backgroundColor: 'rgba(245, 158, 11, 0.25)',
+            backgroundColor: 'rgba(56, 189, 248, 0.20)',
             borderColor: getBorderColor()
           }}
           aria-hidden="true"
@@ -140,11 +140,11 @@ export default function ReadingRuler({
 
       {/* Floating Ruler Controls HUD */}
       <div 
-        className="fixed bottom-20 right-6 z-50 flex items-center gap-2 bg-obsidian-900/95 border border-obsidian-border text-white px-3 py-2 rounded-full shadow-dock backdrop-blur-md text-xs font-mono"
+        className="fixed bottom-20 right-6 z-50 flex items-center gap-2 bg-obsidian-900/95 border border-obsidian-border text-white px-3.5 py-2 rounded-full shadow-dock backdrop-blur-md text-xs font-mono"
         role="region"
         aria-label="Reading Ruler Quick Controls"
       >
-        <div className="flex items-center gap-1.5 font-bold pr-2 border-r border-obsidian-border text-ambergold-400">
+        <div className="flex items-center gap-1.5 font-bold pr-2 border-r border-obsidian-border text-cyan-400">
           <MoveVertical className="w-4 h-4" />
           <span>Focus Ruler</span>
         </div>

@@ -11,10 +11,6 @@ export default defineConfig({
       '@cogniease/core': fileURLToPath(new URL('../../packages/core/src', import.meta.url))
     }
   },
-  build: {
-    outDir: fileURLToPath(new URL('../../dist', import.meta.url)),
-    emptyOutDir: true
-  },
   server: {
     port: 5173,
     host: true

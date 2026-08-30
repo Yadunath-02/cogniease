@@ -6,12 +6,13 @@ import {
   BookOpen,
   FileText,
   Volume2,
+  Mic,
+  MicOff,
   Wand2,
   TrendingDown,
   Gauge,
   Eye,
   Layers,
-  Download,
   Printer
 } from 'lucide-react';
 import { parseBionicTokens, countSyllables, analyzeReadability } from '@cogniease/core';
@@ -34,7 +35,9 @@ export default function DualPaneWorkspace({
   onLoadSample,
   surfaceMode,
   onChangeSurfaceMode,
-  activePersona
+  activePersona,
+  isRecording,
+  onToggleRecording
 }) {
   const [copied, setCopied] = useState(false);
   const [showSyllables, setShowSyllables] = useState(false);
@@ -165,7 +168,7 @@ export default function DualPaneWorkspace({
           <BookOpen className="w-12 h-12 mb-3 stroke-[1.5]" />
           <p className="font-semibold text-sm">No text entered yet</p>
           <p className="text-xs mt-1 max-w-sm">
-            Type or paste complex text on the left, or choose a preset legal, medical, or technical excerpt.
+            Type, dictate with your microphone, or choose a preset legal, medical, or technical excerpt on the left.
           </p>
         </div>
       );
@@ -261,7 +264,7 @@ export default function DualPaneWorkspace({
     }`;
 
   return (
-    <div className="max-w-[1440px] mx-auto px-4 pt-5 pb-28">
+    <div className="max-w-[1440px] mx-auto px-4 pt-4 pb-28">
 
       {/* Bento Strip: 4 Telemetry Scorecards */}
       <section className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3" aria-label="Linguistic accessibility telemetry">
@@ -282,7 +285,7 @@ export default function DualPaneWorkspace({
               ? 'bg-rose-950/80 text-rose-300 border-rose-700'
               : 'bg-ambergold-500/15 text-ambergold-400 border-ambergold-500/40'
           }`}>
-            {grade >= 14 ? 'Complex (Post-Grad)' : readabilityMetrics.difficultyRating.split('(')[0].trim()}
+            {grade >= 14 ? 'Academic Jargon' : readabilityMetrics.difficultyRating.split('(')[0].trim()}
           </span>
           <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
             <div className={`h-full rounded-full ${grade >= 14 ? 'bg-rose-500' : grade >= 10 ? 'bg-ambergold-500' : 'bg-emerald-500'}`} style={{ width: `${gradeBar}%` }} />
@@ -291,7 +294,7 @@ export default function DualPaneWorkspace({
 
         {/* 2. Reading Ease Card */}
         <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
-          <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Reading Ease</p>
+          <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Reading Ease Index</p>
           <p className="mt-1 font-mono text-2xl font-bold text-obsidian-text">
             {ease} <span className="text-sm text-obsidian-muted">/ 100</span>
           </p>
@@ -322,7 +325,7 @@ export default function DualPaneWorkspace({
             <TrendingDown className="w-4 h-4 text-emerald-400 mt-1" aria-hidden="true" />
           </div>
           <p className="text-[11px] text-obsidian-muted mt-1">
-            {bionicEnabled ? 'Gold-weighted prefixes reduce eye wander' : 'Enable Bionic Read to reduce saccades'}
+            {bionicEnabled ? 'Gold-weighted prefixes reduce eye fatigue' : 'Enable Bionic Read to reduce saccades'}
           </p>
           <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
             <div className="h-full rounded-full bg-emerald-500" style={{ width: `${saccadicReduction}%` }} />
@@ -330,7 +333,7 @@ export default function DualPaneWorkspace({
         </article>
       </section>
 
-      {/* Dual Pane Cognitive Workspace */}
+      {/* Dual Pane Dynamic Cognitive Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
 
         {/* LEFT PANE: SOURCE DOCUMENT */}
@@ -338,49 +341,74 @@ export default function DualPaneWorkspace({
           className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento flex flex-col h-[650px]"
           aria-labelledby="raw-source-heading"
         >
-          <div className="flex items-center justify-between pb-3 border-b border-obsidian-border gap-2">
+          {/* Header Bar */}
+          <div className="flex items-center justify-between pb-3 border-b border-obsidian-border gap-2 flex-wrap">
             <div className="flex items-center gap-2">
               <FileText className="w-4 h-4 text-ambergold-400" />
               <h3 id="raw-source-heading" className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                 Source Document
               </h3>
             </div>
-            <select
-              value={selectedSampleId}
-              onChange={(e) => {
-                onLoadSample(e.target.value);
-                setPlainLanguageActive(false);
-              }}
-              className="min-h-[44px] bg-obsidian-700 text-xs text-white rounded-lg px-2.5 py-1 border border-obsidian-border max-w-[220px] truncate cursor-pointer font-mono"
-              aria-label="Load preloaded complex sample text"
-            >
-              {SAMPLE_TEXTS.map((s) => (
-                <option key={s.id} value={s.id}>{s.title}</option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedSampleId}
+                onChange={(e) => {
+                  onLoadSample(e.target.value);
+                  setPlainLanguageActive(false);
+                }}
+                className="min-h-[40px] bg-obsidian-700 text-xs text-white rounded-lg px-2.5 py-1 border border-obsidian-border max-w-[210px] truncate cursor-pointer font-mono"
+                aria-label="Load preloaded complex sample text"
+              >
+                {SAMPLE_TEXTS.map((s) => (
+                  <option key={s.id} value={s.id}>{s.title}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between py-2.5 text-xs gap-2">
-            <button
-              onClick={handleTogglePlainLanguage}
-              disabled={isAiSimplifying}
-              className={`flex items-center gap-1.5 min-h-[44px] px-3 py-1.5 rounded-lg font-bold border transition-all ${
-                plainLanguageActive
-                  ? 'bg-emerald-600 border-emerald-400 text-white'
-                  : 'bg-ambergold-500 hover:bg-ambergold-400 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20'
-              }`}
-            >
-              <Wand2 className={`w-3.5 h-3.5 ${isAiSimplifying ? 'animate-spin' : ''}`} />
-              <span>{plainLanguageActive ? 'Revert to Original Jargon' : '✨ AI Plain-English Simplifier'}</span>
-            </button>
+          {/* Action Ribbon: STT Voice Dictation & AI Plain English */}
+          <div className="flex items-center justify-between py-2.5 text-xs gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              
+              {/* STT Dictation Mic Button */}
+              <button
+                onClick={onToggleRecording}
+                className={`flex items-center gap-1.5 min-h-[44px] px-3.5 py-1.5 rounded-lg font-bold border transition-all ${
+                  isRecording
+                    ? 'bg-rose-600 border-rose-400 text-white animate-pulse shadow-lg shadow-rose-600/30'
+                    : 'bg-obsidian-700 hover:bg-obsidian-600 border-obsidian-border text-cyan-300'
+                }`}
+                title="Dictate with microphone (Speech-to-Text)"
+              >
+                {isRecording ? <Mic className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-cyan-400" />}
+                <span>{isRecording ? '● Recording...' : '🎙️ Dictate (STT)'}</span>
+              </button>
+
+              {/* AI Plain English Simplifier Button */}
+              <button
+                onClick={handleTogglePlainLanguage}
+                disabled={isAiSimplifying}
+                className={`flex items-center gap-1.5 min-h-[44px] px-3.5 py-1.5 rounded-lg font-bold border transition-all ${
+                  plainLanguageActive
+                    ? 'bg-emerald-600 border-emerald-400 text-white'
+                    : 'bg-ambergold-500 hover:bg-ambergold-400 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20'
+                }`}
+                title="Decompress complex jargon into plain English Grade 6-8"
+              >
+                <Wand2 className={`w-3.5 h-3.5 ${isAiSimplifying ? 'animate-spin' : ''}`} />
+                <span>{plainLanguageActive ? 'Revert to Original Jargon' : '✨ AI Plain-English Simplifier'}</span>
+              </button>
+            </div>
+
             <button
               onClick={() => { onChangeSourceText(''); setPlainLanguageActive(false); }}
-              className="min-h-[44px] text-obsidian-muted hover:text-rose-400 text-xs px-3 py-1 rounded-lg hover:bg-obsidian-700 transition"
+              className="min-h-[44px] text-obsidian-muted hover:text-rose-400 text-xs px-3 py-1 rounded-lg hover:bg-obsidian-700 transition font-mono"
             >
               Clear
             </button>
           </div>
 
+          {/* Line-numbered Textarea Container */}
           <div className="flex-1 min-h-0 relative flex rounded-xl border border-obsidian-border overflow-hidden bg-obsidian-900">
             <div
               ref={gutterRef}
@@ -401,13 +429,14 @@ export default function DualPaneWorkspace({
                 setPlainLanguageActive(false);
               }}
               onScroll={syncGutter}
-              placeholder="Paste any dense, complex document, legal clause, or research paper here..."
+              placeholder="Paste any dense, complex document, or click 🎙️ Dictate to speak..."
               className="w-full h-full p-3.5 bg-transparent text-obsidian-text resize-none font-mono text-sm leading-[1.625rem] placeholder-obsidian-muted overflow-y-auto"
               aria-label="Raw text editor input"
               spellCheck={false}
             />
           </div>
 
+          {/* Source Footer */}
           <div className="flex items-center justify-between pt-3 border-t border-obsidian-border text-[11px] text-obsidian-muted font-mono">
             <span>{readabilityMetrics.wordCount} words • {readabilityMetrics.characterCount} characters</span>
             <span>{readabilityMetrics.sentenceCount} sentences</span>
@@ -449,7 +478,7 @@ export default function DualPaneWorkspace({
                   onClick={() => setShowSyllables((prev) => !prev)}
                   className={`min-h-[44px] px-2.5 py-1 text-xs font-bold rounded-lg border transition ${
                     showSyllables
-                      ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400'
+                      ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400 font-bold'
                       : 'bg-black/10 hover:bg-black/20 border-current/20'
                   }`}
                   title="Toggle syllable markers"
@@ -458,11 +487,11 @@ export default function DualPaneWorkspace({
                 </button>
                 <button
                   onClick={onPlayTTS}
-                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-bold rounded-lg bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 transition shadow-sm"
-                  title="Listen with word-by-word karaoke highlight"
+                  className="flex items-center gap-1 min-h-[44px] px-3 py-1 text-xs font-bold rounded-lg bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 transition shadow-sm"
+                  title="Listen aloud with word-by-word karaoke highlight"
                 >
                   <Volume2 className="w-3.5 h-3.5" />
-                  <span>Listen</span>
+                  <span>Listen Aloud</span>
                 </button>
                 <button
                   onClick={handleCopy}
@@ -475,7 +504,7 @@ export default function DualPaneWorkspace({
                 <button
                   onClick={handleExportPDF}
                   className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
-                  title="Export or print PDF"
+                  title="Export or print clean PDF"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Export PDF</span>
@@ -483,7 +512,7 @@ export default function DualPaneWorkspace({
               </div>
             </div>
 
-            {/* Surface Mode Tabs: [Bionic Anchors] [Sentence Chunks] [Plain English] */}
+            {/* Mode Tabs: [Bionic Anchors] [Sentence Chunks] [Plain English] */}
             <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Reading surface modes">
               <button role="tab" aria-selected={surfaceMode === 'bionic'} className={tabClass('bionic')} onClick={() => handleSurfaceTab('bionic')}>
                 [Bionic Anchors]

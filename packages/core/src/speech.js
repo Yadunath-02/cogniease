@@ -1,9 +1,10 @@
 /**
- * @cogniease/core - Web Speech API Speech Synthesis Engine
+ * @cogniease/core - Web Speech API Speech Synthesis and Recognition Engine
  * 
- * Provides robust Text-to-Speech playback with word-by-word karaoke boundary
- * tracking, sentence chunking (preventing Chromium 15-second speech dropouts),
- * and pitch/rate/voice controls.
+ * Provides:
+ * 1. SpeechEngine: High-precision Text-to-Speech (TTS) with word boundary karaoke tracking,
+ *    Chromium 15s timeout workaround, and custom speed/voice controls.
+ * 2. SpeechRecognizer: Hands-free Speech-to-Text (STT) browser dictation.
  */
 
 export class SpeechEngine {
@@ -56,15 +57,8 @@ export class SpeechEngine {
     return this.voices;
   }
 
-  /**
-   * Chunks text into sentence segments to bypass Chromium audio dropouts
-   * @param {string} text 
-   * @returns {Array<{text: string, startWordIndex: number, wordCount: number}>}
-   */
   prepareSentences(text) {
     if (!text) return [];
-    
-    // Split into sentences while keeping punctuation
     const rawSentences = text.match(/[^.!?\n\r]+[.!?\n\r]*/g) || [text];
     let runningWordCount = 0;
     const prepared = [];
@@ -85,11 +79,6 @@ export class SpeechEngine {
     return prepared;
   }
 
-  /**
-   * Starts speaking text from the beginning or specified sentence
-   * @param {string} text 
-   * @param {Object} [overrideOpts] 
-   */
   speak(text, overrideOpts = {}) {
     if (!this.isSupported) {
       if (this.onError) this.onError(new Error('Web Speech API is not supported in this browser.'));
@@ -140,7 +129,6 @@ export class SpeechEngine {
       this.utterance.voice = targetVoice;
     }
 
-    // Word boundary event for karaoke highlight
     this.utterance.onboundary = (event) => {
       if (event.name === 'word') {
         const charIndex = event.charIndex;
@@ -210,5 +198,99 @@ export class SpeechEngine {
 
   setVoice(voiceURI) {
     this.options.voiceURI = voiceURI;
+  }
+}
+
+/**
+ * SpeechRecognizer - Browser Speech-to-Text Dictation Helper
+ */
+export class SpeechRecognizer {
+  constructor(options = {}) {
+    this.options = {
+      lang: 'en-US',
+      continuous: true,
+      interimResults: true,
+      ...options
+    };
+
+    const SpeechRec = typeof window !== 'undefined'
+      ? (window.SpeechRecognition || window.webkitSpeechRecognition)
+      : null;
+
+    this.isSupported = !!SpeechRec;
+    this.recognition = this.isSupported ? new SpeechRec() : null;
+    this.isListening = false;
+
+    // Callbacks
+    this.onResult = null;
+    this.onStateChange = null;
+    this.onError = null;
+
+    if (this.recognition) {
+      this.recognition.continuous = this.options.continuous;
+      this.recognition.interimResults = this.options.interimResults;
+      this.recognition.lang = this.options.lang;
+
+      this.recognition.onstart = () => {
+        this.isListening = true;
+        if (this.onStateChange) this.onStateChange(true);
+      };
+
+      this.recognition.onend = () => {
+        this.isListening = false;
+        if (this.onStateChange) this.onStateChange(false);
+      };
+
+      this.recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+
+        if (this.onResult) {
+          this.onResult({
+            finalTranscript,
+            interimTranscript,
+            fullTranscript: finalTranscript || interimTranscript
+          });
+        }
+      };
+
+      this.recognition.onerror = (err) => {
+        if (this.onError) this.onError(err);
+      };
+    }
+  }
+
+  start() {
+    if (!this.isSupported || this.isListening) return;
+    try {
+      this.recognition.start();
+    } catch (e) {
+      // Ignore if already running
+    }
+  }
+
+  stop() {
+    if (!this.isSupported || !this.isListening) return;
+    try {
+      this.recognition.stop();
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  toggle() {
+    if (this.isListening) {
+      this.stop();
+    } else {
+      this.start();
+    }
   }
 }

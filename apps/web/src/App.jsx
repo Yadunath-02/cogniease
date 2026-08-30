@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
+import HeroSection from './components/HeroSection';
 import DualPaneWorkspace from './components/DualPaneWorkspace';
 import ReadingRuler from './components/ReadingRuler';
 import PersonaSimulator from './components/PersonaSimulator';
 import DeliverablesModal from './components/DeliverablesModal';
-import { SpeechEngine, extractWords } from '@cogniease/core';
+import { SpeechEngine, SpeechRecognizer, extractWords } from '@cogniease/core';
 import { SAMPLE_TEXTS } from './data/sampleText';
 
 export default function App() {
@@ -31,24 +32,72 @@ export default function App() {
   // 4. Theme State
   const [theme, setTheme] = useState('obsidian');
 
-  // 5. Speech Synthesis States
+  // 5. Speech Synthesis (TTS) & Recognition (STT) States
   const [ttsState, setTtsState] = useState('stopped');
   const [ttsRate, setTtsRate] = useState(1.0);
   const [activeTTSWordIndex, setActiveTTSWordIndex] = useState(null);
   const speechEngineRef = useRef(null);
+
+  const [isRecording, setIsRecording] = useState(false);
+  const speechRecognizerRef = useRef(null);
 
   // 6. Modals
   const [isPersonaSimulatorOpen, setIsPersonaSimulatorOpen] = useState(false);
   const [isDeliverablesModalOpen, setIsDeliverablesModalOpen] = useState(false);
 
   // 7. ARIA Live Screen Reader Announcer
-  const [a11yAnnouncement, setA11yAnnouncement] = useState('CogniEase Loaded. Bionic reading active.');
+  const [a11yAnnouncement, setA11yAnnouncement] = useState('CogniEase Accessibility Hub Loaded.');
 
   const announce = (msg) => {
     setA11yAnnouncement(msg);
   };
 
   const totalWords = extractWords(sourceText).length;
+
+  const scrollToWorkspace = () => {
+    const el = document.getElementById('main-workspace');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Tool Launcher interaction from Hero Bento Grid
+  const handleLaunchTool = (toolId) => {
+    switch (toolId) {
+      case 'bionic':
+        setBionicEnabled(true);
+        setSurfaceMode('bionic');
+        announce('Launched Bionic Saccadic Engine.');
+        scrollToWorkspace();
+        break;
+
+      case 'voice':
+        handlePlayTTS();
+        announce('Launched Voice Suite.');
+        scrollToWorkspace();
+        break;
+
+      case 'simplifier':
+        setSurfaceMode('plain');
+        announce('Launched AI Plain-Language Simplifier.');
+        scrollToWorkspace();
+        break;
+
+      case 'ruler':
+        setRulerEnabled(true);
+        announce('Launched Focus Spotlight & Ruler.');
+        scrollToWorkspace();
+        break;
+
+      case 'sandbox':
+        setIsPersonaSimulatorOpen(true);
+        announce('Opened Barrier Simulator Sandbox.');
+        break;
+
+      default:
+        scrollToWorkspace();
+    }
+  };
 
   const handleLoadSample = (sampleId) => {
     const sample = SAMPLE_TEXTS.find((s) => s.id === sampleId);
@@ -60,7 +109,7 @@ export default function App() {
     }
   };
 
-  // Initialize Speech Synthesis Engine
+  // Initialize Speech Synthesis Engine (TTS)
   useEffect(() => {
     speechEngineRef.current = new SpeechEngine({ rate: ttsRate });
 
@@ -87,6 +136,46 @@ export default function App() {
       }
     };
   }, []);
+
+  // Initialize Speech Recognition (STT Dictation)
+  useEffect(() => {
+    speechRecognizerRef.current = new SpeechRecognizer();
+
+    speechRecognizerRef.current.onStateChange = (listening) => {
+      setIsRecording(listening);
+      if (listening) {
+        announce('Microphone dictation active. Speak clearly.');
+      } else {
+        announce('Microphone dictation stopped.');
+      }
+    };
+
+    speechRecognizerRef.current.onResult = ({ finalTranscript }) => {
+      if (finalTranscript) {
+        setSourceText((prev) => (prev ? `${prev} ${finalTranscript}` : finalTranscript));
+      }
+    };
+
+    speechRecognizerRef.current.onError = (err) => {
+      console.warn('Speech recognition notice:', err);
+      setIsRecording(false);
+    };
+
+    return () => {
+      if (speechRecognizerRef.current) {
+        speechRecognizerRef.current.stop();
+      }
+    };
+  }, []);
+
+  const handleToggleRecording = () => {
+    if (!speechRecognizerRef.current) return;
+    if (!speechRecognizerRef.current.isSupported) {
+      alert('Speech Recognition is not supported by your current browser. Please use Chrome or Edge.');
+      return;
+    }
+    speechRecognizerRef.current.toggle();
+  };
 
   const handleChangeTTSRate = (rate) => {
     setTtsRate(rate);
@@ -366,7 +455,16 @@ export default function App() {
         onOpenDeliverablesModal={() => setIsDeliverablesModalOpen(true)}
       />
 
-      {/* Main Dual-Pane Cognitive Workspace & Bento Telemetry */}
+      {/* 1. High-Impact Hero Landing Section & Modular Tool Bento */}
+      <HeroSection
+        onLaunchTool={handleLaunchTool}
+        bionicEnabled={bionicEnabled}
+        rulerEnabled={rulerEnabled}
+        ttsState={ttsState}
+        isRecording={isRecording}
+      />
+
+      {/* 2. Main Dual-Pane Cognitive Workspace & Bento Telemetry */}
       <main id="main-workspace" role="main" className="flex-1">
         <DualPaneWorkspace
           sourceText={sourceText}
@@ -386,6 +484,8 @@ export default function App() {
           surfaceMode={surfaceMode}
           onChangeSurfaceMode={setSurfaceMode}
           activePersona={activePersona}
+          isRecording={isRecording}
+          onToggleRecording={handleToggleRecording}
         />
       </main>
 

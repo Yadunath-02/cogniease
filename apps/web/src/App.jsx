@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
+import ToolNav from './components/ToolNav';
+import HomeGrid from './components/HomeGrid';
 import DualPaneWorkspace from './components/DualPaneWorkspace';
+import SimplifierView from './components/tools/SimplifierView';
+import VoiceSuiteView from './components/tools/VoiceSuiteView';
+import RulerView from './components/tools/RulerView';
+import SandboxView from './components/tools/SandboxView';
 import ReadingRuler from './components/ReadingRuler';
 import PersonaSimulator from './components/PersonaSimulator';
 import DeliverablesModal from './components/DeliverablesModal';
@@ -9,30 +14,33 @@ import { SpeechEngine, SpeechRecognizer, extractWords } from '@cogniease/core';
 import { SAMPLE_TEXTS } from './data/sampleText';
 
 export default function App() {
-  // 1. Text Content & Sample Selection State
+  // 1. View Architecture & State Routing ('home' | 'bionic' | 'simplifier' | 'voice' | 'ruler' | 'sandbox')
+  const [currentView, setCurrentView] = useState('home');
+
+  // 2. Text Content & Sample Selection State
   const [sourceText, setSourceText] = useState(SAMPLE_TEXTS[0].rawText);
   const [selectedSampleId, setSelectedSampleId] = useState(SAMPLE_TEXTS[0].id);
   const [surfaceMode, setSurfaceMode] = useState('bionic'); // 'bionic' | 'chunks' | 'plain'
   const [activePersona, setActivePersona] = useState(null); // null | 'adhd' | 'dyslexia' | 'sensory'
 
-  // 2. Assistive Feature States
+  // 3. Assistive Feature States
   const [bionicEnabled, setBionicEnabled] = useState(true);
   const [fixationRatio, setFixationRatio] = useState(0.45);
 
   const [rulerEnabled, setRulerEnabled] = useState(false);
   const [rulerMode, setRulerMode] = useState('focus-line');
 
-  // 3. Typography States
+  // 4. Typography States
   const [fontFamily, setFontFamily] = useState('dyslexic');
   const [fontSize, setFontSize] = useState(18);
   const [lineHeight, setLineHeight] = useState(1.85);
   const [letterSpacing, setLetterSpacing] = useState(1.0);
   const [wordSpacing, setWordSpacing] = useState(2.0);
 
-  // 4. Theme State
+  // 5. Theme State
   const [theme, setTheme] = useState('obsidian');
 
-  // 5. Speech Synthesis (TTS) & Recognition (STT) States
+  // 6. Speech Synthesis (TTS) & Recognition (STT) States
   const [ttsState, setTtsState] = useState('stopped');
   const [ttsRate, setTtsRate] = useState(1.0);
   const [activeTTSWordIndex, setActiveTTSWordIndex] = useState(null);
@@ -41,12 +49,12 @@ export default function App() {
   const [isRecording, setIsRecording] = useState(false);
   const speechRecognizerRef = useRef(null);
 
-  // 6. Modals
+  // 7. Modals
   const [isPersonaSimulatorOpen, setIsPersonaSimulatorOpen] = useState(false);
   const [isDeliverablesModalOpen, setIsDeliverablesModalOpen] = useState(false);
 
-  // 7. ARIA Live Screen Reader Announcer
-  const [a11yAnnouncement, setA11yAnnouncement] = useState('CogniEase Accessibility Hub Loaded.');
+  // 8. ARIA Live Screen Reader Announcer
+  const [a11yAnnouncement, setA11yAnnouncement] = useState('CogniEase Accessibility Suite Loaded.');
 
   const announce = (msg) => {
     setA11yAnnouncement(msg);
@@ -54,49 +62,20 @@ export default function App() {
 
   const totalWords = extractWords(sourceText).length;
 
-  const scrollToWorkspace = () => {
-    const el = document.getElementById('main-workspace');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleSelectView = (viewId) => {
+    setCurrentView(viewId);
+    if (viewId === 'ruler') {
+      setRulerEnabled(true);
     }
-  };
-
-  // Tool Launcher interaction from Hero Bento Grid
-  const handleLaunchTool = (toolId) => {
-    switch (toolId) {
-      case 'bionic':
-        setBionicEnabled(true);
-        setSurfaceMode('bionic');
-        announce('Launched Bionic Saccadic Engine.');
-        scrollToWorkspace();
-        break;
-
-      case 'voice':
-        handlePlayTTS();
-        announce('Launched Voice Suite.');
-        scrollToWorkspace();
-        break;
-
-      case 'simplifier':
-        setSurfaceMode('plain');
-        announce('Launched AI Plain-Language Simplifier.');
-        scrollToWorkspace();
-        break;
-
-      case 'ruler':
-        setRulerEnabled(true);
-        announce('Launched Focus Spotlight & Ruler.');
-        scrollToWorkspace();
-        break;
-
-      case 'sandbox':
-        setIsPersonaSimulatorOpen(true);
-        announce('Opened Barrier Simulator Sandbox.');
-        break;
-
-      default:
-        scrollToWorkspace();
+    if (viewId === 'bionic') {
+      setBionicEnabled(true);
+      setSurfaceMode('bionic');
     }
+    if (viewId === 'simplifier') {
+      setSurfaceMode('plain');
+    }
+    announce(`Switched view to ${viewId}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleLoadSample = (sampleId) => {
@@ -104,12 +83,11 @@ export default function App() {
     if (sample) {
       setSelectedSampleId(sampleId);
       setSourceText(sample.rawText);
-      setSurfaceMode('bionic');
-      announce(`Loaded ${sample.title}`);
+      announce(`Loaded sample: ${sample.title}`);
     }
   };
 
-  // Initialize Speech Synthesis Engine (TTS)
+  // Initialize Web Speech Engine (TTS)
   useEffect(() => {
     speechEngineRef.current = new SpeechEngine({ rate: ttsRate });
 
@@ -137,16 +115,16 @@ export default function App() {
     };
   }, []);
 
-  // Initialize Speech Recognition (STT Dictation)
+  // Initialize Web Speech Recognition (STT)
   useEffect(() => {
     speechRecognizerRef.current = new SpeechRecognizer();
 
     speechRecognizerRef.current.onStateChange = (listening) => {
       setIsRecording(listening);
       if (listening) {
-        announce('Microphone dictation active. Speak clearly.');
+        announce('Microphone dictation active. Speak now.');
       } else {
-        announce('Microphone dictation stopped.');
+        announce('Microphone dictation paused.');
       }
     };
 
@@ -171,7 +149,7 @@ export default function App() {
   const handleToggleRecording = () => {
     if (!speechRecognizerRef.current) return;
     if (!speechRecognizerRef.current.isSupported) {
-      alert('Speech Recognition is not supported by your current browser. Please use Chrome or Edge.');
+      alert('Speech Recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
       return;
     }
     speechRecognizerRef.current.toggle();
@@ -186,7 +164,7 @@ export default function App() {
 
   const handlePlayTTS = () => {
     if (!speechEngineRef.current) return;
-    announce('Starting speech with word-by-word karaoke highlight.');
+    announce('Starting speech synthesis.');
     speechEngineRef.current.speak(sourceText, { rate: ttsRate });
   };
 
@@ -224,8 +202,7 @@ export default function App() {
         setLetterSpacing(1.5);
         setWordSpacing(3.0);
         setTheme('obsidian');
-        setSurfaceMode('bionic');
-        announce('Applied ADHD Focus preset with Bionic Saccades and Reading Ruler.');
+        announce('Applied ADHD Focus preset with Bionic Saccades and Focus Ruler.');
         break;
 
       case 'dyslexia':
@@ -238,8 +215,7 @@ export default function App() {
         setLetterSpacing(2.0);
         setWordSpacing(4.0);
         setTheme('sepia');
-        setSurfaceMode('bionic');
-        announce('Applied Dyslexia Comfort preset with OpenDyslexic typeface and Warm Sepia tint.');
+        announce('Applied Dyslexia Comfort preset with OpenDyslexic font and Warm Sepia tint.');
         break;
 
       case 'sensory':
@@ -251,8 +227,7 @@ export default function App() {
         setLetterSpacing(1.0);
         setWordSpacing(2.0);
         setTheme('mint');
-        setSurfaceMode('chunks');
-        announce('Applied Sensory Calming preset with Soft Mint tint.');
+        announce('Applied Sensory Rest preset with Soft Mint tint.');
         break;
 
       case 'contrast':
@@ -265,8 +240,7 @@ export default function App() {
         setLetterSpacing(1.5);
         setWordSpacing(3.0);
         setTheme('contrast');
-        setSurfaceMode('bionic');
-        announce('Applied High Contrast Gold preset with 17:1 contrast ratio.');
+        announce('Applied High Contrast Gold preset (17:1 contrast ratio).');
         break;
 
       case 'default':
@@ -280,7 +254,6 @@ export default function App() {
         setLetterSpacing(1.0);
         setWordSpacing(2.0);
         setTheme('obsidian');
-        setSurfaceMode('bionic');
         announce('Reset to Default settings.');
         break;
     }
@@ -290,24 +263,24 @@ export default function App() {
     if (activePersona === personaId) {
       setActivePersona(null);
       handleApplyPreset('default');
-      announce('Persona sandbox cleared.');
+      announce('Persona simulation cleared.');
       return;
     }
 
     setActivePersona(personaId);
     if (personaId === 'adhd') {
       handleApplyPreset('adhd');
-      announce('ADHD Wandering simulation active. Distractors overlay the reading surface.');
+      announce('ADHD Wandering simulation active.');
     } else if (personaId === 'dyslexia') {
       handleApplyPreset('dyslexia');
-      announce('Dyslexia Drift simulation active. Glyph jitter is applied to the reading surface.');
+      announce('Dyslexia Drift simulation active.');
     } else if (personaId === 'sensory') {
       handleApplyPreset('sensory');
-      announce('Sensory Overload simulation active. Glare veil is applied to the reading surface.');
+      announce('Sensory Overload simulation active.');
     }
   };
 
-  // Keyboard Navigation & Shortcuts
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
@@ -321,14 +294,14 @@ export default function App() {
           announce(next ? 'Bionic reading enabled' : 'Bionic reading disabled');
           return next;
         });
-        setSurfaceMode('bionic');
+        setCurrentView('bionic');
       }
 
       if (e.altKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
         setRulerEnabled((r) => {
           const next = !r;
-          announce(next ? 'Reading ruler enabled' : 'Reading ruler disabled');
+          announce(next ? 'Focus ruler active' : 'Focus ruler disabled');
           return next;
         });
       }
@@ -405,26 +378,25 @@ export default function App() {
 
       {/* Skip to Main Content Link */}
       <a
-        href="#main-workspace"
+        href="#workspace-surface"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-ambergold-500 focus:text-obsidian-900 focus:rounded-lg font-bold shadow-2xl"
       >
-        Skip to main reading workspace
+        Skip to main content
       </a>
 
-      {/* Sticky Top Navigation */}
+      {/* Top Main Navigation */}
       <Navbar
         bionicEnabled={bionicEnabled}
         onToggleBionic={() => {
           setBionicEnabled((b) => !b);
           announce(!bionicEnabled ? 'Bionic reading enabled' : 'Bionic reading disabled');
-          setSurfaceMode('bionic');
         }}
         fixationRatio={fixationRatio}
         onChangeFixationRatio={setFixationRatio}
         rulerEnabled={rulerEnabled}
         onToggleRuler={() => {
           setRulerEnabled((r) => !r);
-          announce(!rulerEnabled ? 'Reading ruler active' : 'Reading ruler disabled');
+          announce(!rulerEnabled ? 'Focus ruler active' : 'Focus ruler disabled');
         }}
         rulerMode={rulerMode}
         onChangeRulerMode={setRulerMode}
@@ -453,45 +425,102 @@ export default function App() {
         selectedSampleId={selectedSampleId}
         onLoadSample={handleLoadSample}
         onOpenDeliverablesModal={() => setIsDeliverablesModalOpen(true)}
+        onSelectView={handleSelectView}
       />
 
-      {/* 1. High-Impact Hero Landing Section & Modular Tool Bento */}
-      <HeroSection
-        onLaunchTool={handleLaunchTool}
-        bionicEnabled={bionicEnabled}
-        rulerEnabled={rulerEnabled}
-        ttsState={ttsState}
-        isRecording={isRecording}
-      />
-
-      {/* 2. Main Dual-Pane Cognitive Workspace & Bento Telemetry */}
-      <main id="main-workspace" role="main" className="flex-1">
-        <DualPaneWorkspace
-          sourceText={sourceText}
-          onChangeSourceText={setSourceText}
-          bionicEnabled={bionicEnabled}
-          fixationRatio={fixationRatio}
-          fontFamily={fontFamily}
-          fontSize={fontSize}
-          lineHeight={lineHeight}
-          letterSpacing={letterSpacing}
-          wordSpacing={wordSpacing}
-          theme={theme}
-          activeTTSWordIndex={activeTTSWordIndex}
-          onPlayTTS={handlePlayTTS}
-          selectedSampleId={selectedSampleId}
-          onLoadSample={handleLoadSample}
-          surfaceMode={surfaceMode}
-          onChangeSurfaceMode={setSurfaceMode}
-          activePersona={activePersona}
-          isRecording={isRecording}
-          onToggleRecording={handleToggleRecording}
+      {/* Persistent Horizontal Tool Switcher Bar (when in any tool workspace) */}
+      {currentView !== 'home' && (
+        <ToolNav
+          currentView={currentView}
+          onSelectView={handleSelectView}
         />
+      )}
+
+      {/* Main Multi-View Surface */}
+      <main id="workspace-surface" role="main" className="flex-1">
+        
+        {/* VIEW 1: Goblin.tools Style Home Grid */}
+        {currentView === 'home' && (
+          <HomeGrid
+            onSelectView={handleSelectView}
+            onOpenDeliverables={() => setIsDeliverablesModalOpen(true)}
+          />
+        )}
+
+        {/* VIEW 2: Dedicated Bionic Reading Engine Workspace */}
+        {currentView === 'bionic' && (
+          <DualPaneWorkspace
+            sourceText={sourceText}
+            onChangeSourceText={setSourceText}
+            bionicEnabled={bionicEnabled}
+            fixationRatio={fixationRatio}
+            fontFamily={fontFamily}
+            fontSize={fontSize}
+            lineHeight={lineHeight}
+            letterSpacing={letterSpacing}
+            wordSpacing={wordSpacing}
+            theme={theme}
+            activeTTSWordIndex={activeTTSWordIndex}
+            onPlayTTS={handlePlayTTS}
+            selectedSampleId={selectedSampleId}
+            onLoadSample={handleLoadSample}
+            surfaceMode={surfaceMode}
+            onChangeSurfaceMode={setSurfaceMode}
+            activePersona={activePersona}
+            isRecording={isRecording}
+            onToggleRecording={handleToggleRecording}
+          />
+        )}
+
+        {/* VIEW 3: Dedicated AI Plain-Language Simplifier */}
+        {currentView === 'simplifier' && (
+          <SimplifierView
+            sourceText={sourceText}
+            onChangeSourceText={setSourceText}
+          />
+        )}
+
+        {/* VIEW 4: Dedicated Voice Suite (TTS & STT Studio) */}
+        {currentView === 'voice' && (
+          <VoiceSuiteView
+            sourceText={sourceText}
+            onChangeSourceText={setSourceText}
+            ttsState={ttsState}
+            onPlayTTS={handlePlayTTS}
+            onPauseTTS={handlePauseTTS}
+            onResumeTTS={handleResumeTTS}
+            onStopTTS={handleStopTTS}
+            ttsRate={ttsRate}
+            onChangeTTSRate={handleChangeTTSRate}
+            activeTTSWordIndex={activeTTSWordIndex}
+            isRecording={isRecording}
+            onToggleRecording={handleToggleRecording}
+          />
+        )}
+
+        {/* VIEW 5: Dedicated Focus Spotlight & Ruler Canvas */}
+        {currentView === 'ruler' && (
+          <RulerView
+            sourceText={sourceText}
+            onChangeSourceText={setSourceText}
+            fontFamily={fontFamily}
+            fontSize={fontSize}
+            lineHeight={lineHeight}
+            letterSpacing={letterSpacing}
+            wordSpacing={wordSpacing}
+          />
+        )}
+
+        {/* VIEW 6: Dedicated Cognitive Barrier Simulator Sandbox */}
+        {currentView === 'sandbox' && (
+          <SandboxView />
+        )}
+
       </main>
 
-      {/* Reading Ruler Spotlight Component */}
+      {/* Focus Spotlight Ruler Overlay Mask */}
       <ReadingRuler
-        enabled={rulerEnabled}
+        enabled={rulerEnabled || currentView === 'ruler'}
         mode={rulerMode}
         onToggle={() => setRulerEnabled(false)}
         onModeChange={setRulerMode}
@@ -509,23 +538,26 @@ export default function App() {
         onClose={() => setIsDeliverablesModalOpen(false)}
       />
 
-      {/* Bottom Persona Simulator Floating Dock */}
-      <nav
-        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-2 rounded-full bg-obsidian-900/95 border border-obsidian-border shadow-dock backdrop-blur-md"
-        aria-label="Persona sandbox dock"
-      >
-        {dockPill('adhd', '⚡', 'ADHD Wandering')}
-        {dockPill('dyslexia', '🔤', 'Dyslexia Drift')}
-        {dockPill('sensory', '🚨', 'Sensory Overload')}
-        <button
-          type="button"
-          onClick={() => setIsPersonaSimulatorOpen(true)}
-          className="min-h-[44px] px-3 py-2 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-obsidian-muted hover:text-ambergold-400 border border-transparent hover:border-obsidian-border"
-          title="Open full barrier sandbox (Alt+S)"
+      {/* Floating Persona Simulation Dock (active on all tool views) */}
+      {currentView !== 'home' && (
+        <nav
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-2 rounded-full bg-obsidian-900/95 border border-obsidian-border shadow-dock backdrop-blur-md"
+          aria-label="Persona sandbox dock"
         >
-          Sandbox
-        </button>
-      </nav>
+          {dockPill('adhd', '⚡', 'ADHD Wandering')}
+          {dockPill('dyslexia', '🔤', 'Dyslexia Drift')}
+          {dockPill('sensory', '🚨', 'Sensory Overload')}
+          <button
+            type="button"
+            onClick={() => setIsPersonaSimulatorOpen(true)}
+            className="min-h-[44px] px-3 py-2 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-obsidian-muted hover:text-ambergold-400 border border-transparent hover:border-obsidian-border"
+            title="Open full barrier sandbox (Alt+S)"
+          >
+            Sandbox
+          </button>
+        </nav>
+      )}
+
     </div>
   );
 }

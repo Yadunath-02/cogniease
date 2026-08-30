@@ -42,7 +42,8 @@ export default function Navbar({
   onApplyPreset,
   selectedSampleId,
   onLoadSample,
-  onOpenDeliverablesModal
+  onOpenDeliverablesModal,
+  onSelectView
 }) {
   const [showTypographyMenu, setShowTypographyMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
@@ -119,17 +120,21 @@ export default function Navbar({
 
         {/* Brand Pill with Green [WCAG 2.2 AAA] tag */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 min-h-[44px] pl-1.5 pr-3 py-1 rounded-full border border-obsidian-border bg-obsidian-800/90 shadow-sm">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ambergold-600 to-ambergold-400 flex items-center justify-center text-obsidian-900 font-black text-sm shadow-md shadow-ambergold-500/20">
+          <button
+            onClick={() => onSelectView && onSelectView('home')}
+            className="flex items-center gap-2 min-h-[44px] pl-1.5 pr-3 py-1 rounded-full border border-obsidian-border bg-obsidian-800/90 hover:bg-obsidian-800 shadow-sm transition group"
+            title="Return to Home Grid"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ambergold-600 to-ambergold-400 flex items-center justify-center text-obsidian-900 font-black text-sm shadow-md shadow-ambergold-500/20 group-hover:scale-105 transition-transform">
               🧠
             </div>
-            <span className="font-extrabold text-sm tracking-tight text-white">
+            <span className="font-extrabold text-sm tracking-tight text-white group-hover:text-ambergold-400 transition-colors">
               CogniEase
             </span>
             <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-700/60 font-mono shadow-sm">
               [WCAG 2.2 AAA]
             </span>
-          </div>
+          </button>
         </div>
 
         {/* Center: Controls Ribbon */}

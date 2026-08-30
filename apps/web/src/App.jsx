@@ -64,7 +64,9 @@ export default function App() {
 
   // Real-time Theme Synchronizer for the entire Document
   useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.className = `theme-${theme}`;
+    document.body.setAttribute('data-theme', theme);
     document.body.className = `theme-${theme}`;
   }, [theme]);
 

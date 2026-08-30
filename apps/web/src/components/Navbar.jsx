@@ -1,39 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   BookOpen,
-  Volume2,
-  VolumeX,
   Play,
   Pause,
   RotateCcw,
-  Sliders,
-  Sparkles,
   Eye,
   Type,
-  Sun,
-  Moon,
   Palette,
   FileText,
-  HelpCircle,
   Zap,
-  Layers,
   ChevronDown
 } from 'lucide-react';
+import { SAMPLE_TEXTS } from '../data/sampleText';
 
 export default function Navbar({
-  // Bionic Reading
   bionicEnabled,
   onToggleBionic,
-  fixationRatio,
-  onChangeFixationRatio,
-
-  // Reading Ruler
   rulerEnabled,
   onToggleRuler,
-  rulerMode,
-  onChangeRulerMode,
-
-  // Speech Synthesis
   ttsState, // 'playing' | 'paused' | 'stopped'
   onPlayTTS,
   onPauseTTS,
@@ -41,8 +25,8 @@ export default function Navbar({
   onStopTTS,
   ttsRate,
   onChangeTTSRate,
-
-  // Typography Settings
+  activeTTSWordIndex,
+  totalWords = 100,
   fontFamily,
   onChangeFontFamily,
   fontSize,
@@ -53,25 +37,53 @@ export default function Navbar({
   onChangeLetterSpacing,
   wordSpacing,
   onChangeWordSpacing,
-
-  // Theme Settings
   theme,
   onChangeTheme,
-
-  // Quick Presets
   onApplyPreset,
-
-  // Modals
-  onOpenPersonaSimulator,
+  selectedSampleId,
+  onLoadSample,
   onOpenDeliverablesModal
 }) {
   const [showTypographyMenu, setShowTypographyMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showPresetsMenu, setShowPresetsMenu] = useState(false);
-  const [showTTSMenu, setShowTTSMenu] = useState(false);
+  const [showDocsMenu, setShowDocsMenu] = useState(false);
+  const navRef = useRef(null);
+
+  // Close menus on outside click
+  useEffect(() => {
+    const onDocClick = (e) => {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setShowTypographyMenu(false);
+        setShowThemeMenu(false);
+        setShowPresetsMenu(false);
+        setShowDocsMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, []);
+
+  const closeMenus = () => {
+    setShowTypographyMenu(false);
+    setShowThemeMenu(false);
+    setShowPresetsMenu(false);
+    setShowDocsMenu(false);
+  };
+
+  // Compute live playback timer (e.g. 0:12 / 0:38)
+  const totalSeconds = Math.max(1, Math.round((totalWords / (180 * ttsRate)) * 60));
+  const currentWord = activeTTSWordIndex != null ? Math.min(activeTTSWordIndex, totalWords) : 0;
+  const elapsedSeconds = ttsState === 'stopped' ? 0 : Math.min(totalSeconds, Math.round((currentWord / Math.max(1, totalWords)) * totalSeconds));
+
+  const formatTime = (sec) => {
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
 
   const THEMES = [
-    { id: 'obsidian', name: 'Obsidian AAA Dark', bg: '#0D1117', text: '#F0F6FC' },
+    { id: 'obsidian', name: 'Obsidian AAA Dark', bg: '#0A0C10', text: '#F0F6FC' },
     { id: 'light', name: 'Crisp Day Light', bg: '#FFFFFF', text: '#0A0D14' },
     { id: 'sepia', name: 'Warm Sepia (Low Strain)', bg: '#FBF0D9', text: '#2D2319' },
     { id: 'mint', name: 'Calming Mint (Photophobia)', bg: '#EBF7EE', text: '#132B1A' },
@@ -84,314 +96,285 @@ export default function Navbar({
     { id: 'atkinson', name: 'Atkinson Hyperlegible (Braille Inst.)' },
     { id: 'lexend', name: 'Lexend (Visual Crowding Aid)' },
     { id: 'sans', name: 'Inter (Clean Sans)' },
-    { id: 'mono', name: 'Monospace (Uniform Grid)' },
+    { id: 'mono', name: 'Geist Mono (Telemetry Grid)' },
     { id: 'serif', name: 'Merriweather (Book Serif)' }
   ];
 
+  const toolBtn = (active) =>
+    `flex items-center gap-1.5 min-h-[44px] px-3 py-2 text-xs font-semibold rounded-xl border transition-all ${
+      active
+        ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/25 font-bold'
+        : 'bg-obsidian-800 hover:bg-obsidian-700 border-obsidian-border text-obsidian-text'
+    }`;
+
+  const menuBtn =
+    'flex items-center gap-1.5 min-h-[44px] px-3 py-2 text-xs font-semibold rounded-xl bg-obsidian-800 hover:bg-obsidian-700 border border-obsidian-border text-obsidian-text';
+
   return (
-    <header className="sticky top-0 z-30 border-b border-obsidian-border bg-obsidian-900/90 backdrop-blur-md text-obsidian-text px-4 py-2.5 transition-colors">
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-        
-        {/* Brand & Badge */}
+    <header
+      ref={navRef}
+      className="sticky top-0 z-30 border-b border-obsidian-border bg-obsidian-900/95 backdrop-blur-md text-obsidian-text px-4 py-2.5 font-ui"
+    >
+      <div className="max-w-[1440px] mx-auto flex flex-wrap items-center justify-between gap-3">
+
+        {/* Brand Pill with Green [WCAG 2.2 AAA] tag */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20 text-white font-black text-xl">
+          <div className="flex items-center gap-2 min-h-[44px] pl-1.5 pr-3 py-1 rounded-full border border-obsidian-border bg-obsidian-800/90 shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-ambergold-600 to-ambergold-400 flex items-center justify-center text-obsidian-900 font-black text-sm shadow-md shadow-ambergold-500/20">
               🧠
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-blue-400 via-indigo-200 to-white bg-clip-text text-transparent">
-                  CogniEase
-                </span>
-                <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-blue-900/60 text-blue-300 border border-blue-700/50">
-                  WCAG AAA
-                </span>
-              </div>
-              <p className="text-[11px] text-obsidian-muted font-medium">Neurodivergent Reading Engine</p>
-            </div>
+            <span className="font-extrabold text-sm tracking-tight text-white">
+              CogniEase
+            </span>
+            <span className="text-[10px] font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-950/90 text-emerald-400 border border-emerald-700/60 font-mono shadow-sm">
+              [WCAG 2.2 AAA]
+            </span>
           </div>
         </div>
 
-        {/* Center: Accessibility Action Controls */}
+        {/* Center: Controls Ribbon */}
         <div className="flex items-center flex-wrap gap-2">
-          
-          {/* Quick Presets Dropdown */}
+
+          {/* Preset Documents Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setShowPresetsMenu(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-obsidian-border text-blue-300 hover:text-white transition-all shadow-sm"
-              title="Select a cognitive accessibility preset"
+              onClick={() => { setShowDocsMenu((p) => !p); setShowPresetsMenu(false); setShowTypographyMenu(false); setShowThemeMenu(false); }}
+              className={menuBtn}
+              title="Load a preset source document"
+              aria-expanded={showDocsMenu}
+              aria-haspopup="listbox"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-ambergold-400" />
+              <span>Documents</span>
+              <ChevronDown className="w-3 h-3 opacity-60" />
+            </button>
+            {showDocsMenu && (
+              <div className="absolute top-full left-0 mt-1.5 w-72 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 animate-in fade-in">
+                <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1 font-mono">Preset documents</div>
+                {SAMPLE_TEXTS.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => { onLoadSample(s.id); closeMenus(); }}
+                    className={`w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs transition ${
+                      selectedSampleId === s.id
+                        ? 'bg-ambergold-500/15 text-ambergold-400 font-bold'
+                        : 'hover:bg-obsidian-700 text-obsidian-text'
+                    }`}
+                  >
+                    <span className="block font-semibold">{s.title}</span>
+                    <span className="text-[10px] text-obsidian-muted font-normal">{s.category}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Presets Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => { setShowPresetsMenu((p) => !p); setShowDocsMenu(false); setShowTypographyMenu(false); setShowThemeMenu(false); }}
+              className={menuBtn}
+              title="Cognitive accessibility presets"
               aria-expanded={showPresetsMenu}
             >
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+              <Zap className="w-3.5 h-3.5 text-ambergold-400" />
               <span>Presets</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
-
             {showPresetsMenu && (
-              <div className="absolute top-full left-0 mt-1.5 w-60 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-1">
-                <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1">Neurodivergent Profiles</div>
-                <button
-                  onClick={() => { onApplyPreset('adhd'); setShowPresetsMenu(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-obsidian-700 flex flex-col transition"
-                >
-                  <span className="font-semibold text-amber-300">⚡ ADHD Focus</span>
-                  <span className="text-[10px] text-gray-400">Bionic Saccade + Reading Ruler + High Spacing</span>
+              <div className="absolute top-full left-0 mt-1.5 w-64 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 animate-in fade-in">
+                <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1 font-mono">Neurodivergent profiles</div>
+                <button onClick={() => { onApplyPreset('adhd'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
+                  <span className="font-semibold text-ambergold-400">⚡ ADHD Focus</span>
+                  <span className="block text-[10px] text-obsidian-muted">Bionic saccades + focus ruler</span>
                 </button>
-                <button
-                  onClick={() => { onApplyPreset('dyslexia'); setShowPresetsMenu(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-obsidian-700 flex flex-col transition"
-                >
-                  <span className="font-semibold text-emerald-300">📖 Dyslexia Comfort</span>
-                  <span className="text-[10px] text-gray-400">OpenDyslexic Font + Wide Letter Spacing</span>
+                <button onClick={() => { onApplyPreset('dyslexia'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
+                  <span className="font-semibold text-ambergold-400">📖 Dyslexia Comfort</span>
+                  <span className="block text-[10px] text-obsidian-muted">OpenDyslexic + wide tracking</span>
                 </button>
-                <button
-                  onClick={() => { onApplyPreset('sensory'); setShowPresetsMenu(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-obsidian-700 flex flex-col transition"
-                >
-                  <span className="font-semibold text-blue-300">🌿 Sensory Rest / Calming</span>
-                  <span className="text-[10px] text-gray-400">Warm Sepia Tint + Soft Contrast</span>
+                <button onClick={() => { onApplyPreset('sensory'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
+                  <span className="font-semibold text-ambergold-400">🌿 Sensory Rest</span>
+                  <span className="block text-[10px] text-obsidian-muted">Soft mint tint, reduced contrast glare</span>
                 </button>
-                <button
-                  onClick={() => { onApplyPreset('contrast'); setShowPresetsMenu(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-obsidian-700 flex flex-col transition"
-                >
-                  <span className="font-semibold text-yellow-400">☀️ High Contrast Gold (17:1)</span>
-                  <span className="text-[10px] text-gray-400">Pure Black + High Luminance Yellow</span>
+                <button onClick={() => { onApplyPreset('contrast'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700">
+                  <span className="font-semibold text-ambergold-400">☀️ High Contrast Gold</span>
+                  <span className="block text-[10px] text-obsidian-muted">17:1 luminance pairing</span>
                 </button>
-                <div className="border-t border-obsidian-border my-1"></div>
-                <button
-                  onClick={() => { onApplyPreset('default'); setShowPresetsMenu(false); }}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-obsidian-700 text-gray-400 hover:text-white"
-                >
+                <div className="border-t border-obsidian-border my-1" />
+                <button onClick={() => { onApplyPreset('default'); closeMenus(); }} className="w-full text-left px-2.5 py-2 min-h-[44px] rounded-lg text-xs hover:bg-obsidian-700 text-obsidian-muted">
                   Reset to Default
                 </button>
               </div>
             )}
           </div>
 
-          {/* Saccadic Bionic Reading Toggle */}
+          {/* Quick Toggle: Bionic Read */}
           <button
             onClick={onToggleBionic}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-              bionicEnabled
-                ? 'bg-blue-600 border-blue-400 text-white shadow-md shadow-blue-500/25'
-                : 'bg-obsidian-800 hover:bg-obsidian-700 border-obsidian-border text-gray-300'
-            }`}
+            className={toolBtn(bionicEnabled)}
             title="Toggle Saccadic Bionic Fixation (Alt+B)"
             aria-pressed={bionicEnabled}
           >
-            <Zap className={`w-3.5 h-3.5 ${bionicEnabled ? 'text-yellow-300 fill-yellow-300' : 'text-gray-400'}`} />
+            <Zap className={`w-3.5 h-3.5 ${bionicEnabled ? 'fill-obsidian-900' : 'text-obsidian-muted'}`} />
             <span>Bionic Read</span>
           </button>
 
-          {/* Reading Ruler Toggle */}
+          {/* Quick Toggle: Focus Ruler */}
           <button
             onClick={onToggleRuler}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
-              rulerEnabled
-                ? 'bg-amber-600 border-amber-400 text-white shadow-md shadow-amber-500/25'
-                : 'bg-obsidian-800 hover:bg-obsidian-700 border-obsidian-border text-gray-300'
-            }`}
-            title="Toggle Reading Ruler Mask (Alt+R)"
+            className={toolBtn(rulerEnabled)}
+            title="Toggle Focus Reading Ruler (Alt+R)"
             aria-pressed={rulerEnabled}
           >
             <Eye className="w-3.5 h-3.5" />
-            <span>Reading Ruler</span>
+            <span>Focus Ruler</span>
           </button>
 
-          {/* Text-to-Speech (TTS) Karaoke Audio Controls */}
-          <div className="flex items-center bg-obsidian-800 border border-obsidian-border rounded-lg p-0.5">
+          {/* Audio TTS Playback Pill with Timer [0:00 / 0:38] */}
+          <div className={`flex items-center gap-1.5 min-h-[44px] px-2.5 rounded-full border transition-all ${
+            ttsState === 'playing'
+              ? 'bg-ambergold-500/15 border-ambergold-500/60 shadow-md shadow-ambergold-500/20'
+              : 'bg-obsidian-800 border-obsidian-border'
+          }`}>
             {ttsState === 'playing' ? (
-              <button
-                onClick={onPauseTTS}
-                className="p-1.5 rounded hover:bg-obsidian-700 text-amber-400"
-                title="Pause Speech"
-                aria-label="Pause Speech"
-              >
-                <Pause className="w-3.5 h-3.5" />
+              <button onClick={onPauseTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Pause Speech">
+                <Pause className="w-4 h-4 fill-ambergold-400" />
               </button>
             ) : ttsState === 'paused' ? (
-              <button
-                onClick={onResumeTTS}
-                className="p-1.5 rounded hover:bg-obsidian-700 text-emerald-400"
-                title="Resume Speech"
-                aria-label="Resume Speech"
-              >
-                <Play className="w-3.5 h-3.5" />
+              <button onClick={onResumeTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Resume Speech">
+                <Play className="w-4 h-4 fill-ambergold-400" />
               </button>
             ) : (
-              <button
-                onClick={onPlayTTS}
-                className="p-1.5 rounded hover:bg-obsidian-700 text-blue-400 hover:text-white"
-                title="Listen with Word-by-Word Karaoke (Space)"
-                aria-label="Play Speech"
-              >
-                <Play className="w-3.5 h-3.5" />
+              <button onClick={onPlayTTS} className="p-1.5 rounded-full hover:bg-obsidian-700 text-obsidian-muted hover:text-ambergold-400 min-w-[36px] min-h-[36px] flex items-center justify-center" aria-label="Play Speech">
+                <Play className="w-4 h-4 fill-current" />
               </button>
             )}
+
+            {/* Timer Display */}
+            <span className="text-[11px] font-mono font-bold text-obsidian-text px-1 select-none">
+              {formatTime(elapsedSeconds)} <span className="text-obsidian-muted font-normal">/ {formatTime(totalSeconds)}</span>
+            </span>
+
+            {/* Animated Waveform */}
+            <div className={`flex items-end gap-[2.5px] h-3.5 px-1 ${ttsState === 'playing' ? '' : 'tts-wave-idle'}`} aria-hidden="true">
+              <span className="tts-wave-bar" />
+              <span className="tts-wave-bar" />
+              <span className="tts-wave-bar" />
+              <span className="tts-wave-bar" />
+            </div>
 
             {ttsState !== 'stopped' && (
-              <button
-                onClick={onStopTTS}
-                className="p-1.5 rounded hover:bg-obsidian-700 text-rose-400"
-                title="Stop Speech"
-                aria-label="Stop Speech"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
+              <button onClick={onStopTTS} className="p-1 rounded hover:bg-obsidian-700 text-rose-400 flex items-center justify-center" aria-label="Stop Speech">
+                <RotateCcw className="w-3 h-3" />
               </button>
             )}
 
-            {/* TTS Speed Rate Selector */}
+            {/* Speed Selector */}
             <select
               value={ttsRate}
               onChange={(e) => onChangeTTSRate(parseFloat(e.target.value))}
-              className="bg-transparent text-[11px] text-gray-300 font-semibold px-1 py-1 focus:outline-none cursor-pointer"
-              title="Voice Playback Speed"
+              className="bg-transparent text-[11px] text-ambergold-400 font-bold font-mono px-1 py-1 focus:outline-none cursor-pointer border-l border-obsidian-border/80 ml-0.5"
               aria-label="Voice Playback Speed"
             >
-              <option value="0.75" className="bg-obsidian-800">0.75x</option>
-              <option value="1.0" className="bg-obsidian-800">1.0x</option>
-              <option value="1.25" className="bg-obsidian-800">1.25x</option>
-              <option value="1.5" className="bg-obsidian-800">1.5x</option>
-              <option value="2.0" className="bg-obsidian-800">2.0x</option>
+              <option value={0.75} className="bg-obsidian-800 text-white">0.75x</option>
+              <option value={1} className="bg-obsidian-800 text-white">1.0x</option>
+              <option value={1.25} className="bg-obsidian-800 text-white">1.25x</option>
+              <option value={1.5} className="bg-obsidian-800 text-white">1.5x</option>
+              <option value={2} className="bg-obsidian-800 text-white">2.0x</option>
             </select>
           </div>
 
-          {/* Typography Controls Dropdown */}
+          {/* Typography Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setShowTypographyMenu(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-obsidian-border text-gray-200"
+              onClick={() => { setShowTypographyMenu((p) => !p); setShowThemeMenu(false); setShowDocsMenu(false); setShowPresetsMenu(false); }}
+              className={menuBtn}
               title="Adjust Font, Line Spacing, and Letter Spacing"
               aria-expanded={showTypographyMenu}
             >
-              <Type className="w-3.5 h-3.5 text-indigo-400" />
+              <Type className="w-3.5 h-3.5 text-ambergold-400" />
               <span>Typography</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
-
             {showTypographyMenu && (
-              <div className="absolute top-full right-0 mt-1.5 w-72 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-4 z-50 animate-in fade-in space-y-3.5">
+              <div className="absolute top-full right-0 mt-1.5 w-72 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-4 z-50 space-y-3.5 animate-in fade-in">
                 <div className="flex items-center justify-between border-b border-obsidian-border pb-2">
                   <span className="text-xs font-bold text-white uppercase tracking-wider">Typography & Spacing</span>
-                  <span className="text-[10px] text-blue-400 font-semibold">WCAG AAA compliant</span>
+                  <span className="text-[10px] text-ambergold-400 font-semibold font-mono">WCAG AAA</span>
                 </div>
-
-                {/* Font Selector */}
                 <div>
-                  <label className="block text-[11px] font-medium text-gray-300 mb-1">Font Family</label>
+                  <label className="block text-[11px] font-medium text-obsidian-muted mb-1" htmlFor="font-family">Font Family</label>
                   <select
+                    id="font-family"
                     value={fontFamily}
                     onChange={(e) => onChangeFontFamily(e.target.value)}
-                    className="w-full bg-obsidian-700 text-white rounded-lg px-2.5 py-1.5 text-xs border border-obsidian-border focus:ring-1 focus:ring-blue-500"
+                    className="w-full min-h-[44px] bg-obsidian-700 text-white rounded-lg px-2.5 py-1.5 text-xs border border-obsidian-border"
                   >
-                    {FONTS.map(f => (
+                    {FONTS.map((f) => (
                       <option key={f.id} value={f.id}>{f.name}</option>
                     ))}
                   </select>
                 </div>
-
-                {/* Font Size */}
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-300 mb-1">
+                  <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Font Size</span>
-                    <span className="font-mono text-blue-300">{fontSize}px</span>
+                    <span className="font-mono text-ambergold-400">{fontSize}px</span>
                   </div>
-                  <input
-                    type="range"
-                    min="14"
-                    max="28"
-                    step="1"
-                    value={fontSize}
-                    onChange={(e) => onChangeFontSize(parseInt(e.target.value))}
-                    className="w-full accent-blue-500 cursor-pointer"
-                  />
+                  <input type="range" min="14" max="28" step="1" value={fontSize} onChange={(e) => onChangeFontSize(parseInt(e.target.value, 10))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Font size" />
                 </div>
-
-                {/* Line Height */}
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-300 mb-1">
+                  <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Line Height</span>
-                    <span className="font-mono text-blue-300">{lineHeight}</span>
+                    <span className="font-mono text-ambergold-400">{lineHeight}</span>
                   </div>
-                  <input
-                    type="range"
-                    min="1.3"
-                    max="2.4"
-                    step="0.1"
-                    value={lineHeight}
-                    onChange={(e) => onChangeLineHeight(parseFloat(e.target.value))}
-                    className="w-full accent-blue-500 cursor-pointer"
-                  />
+                  <input type="range" min="1.3" max="2.4" step="0.1" value={lineHeight} onChange={(e) => onChangeLineHeight(parseFloat(e.target.value))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Line height" />
                 </div>
-
-                {/* Letter Spacing */}
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-300 mb-1">
+                  <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Letter Spacing</span>
-                    <span className="font-mono text-blue-300">{letterSpacing}px</span>
+                    <span className="font-mono text-ambergold-400">{letterSpacing}px</span>
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="4"
-                    step="0.5"
-                    value={letterSpacing}
-                    onChange={(e) => onChangeLetterSpacing(parseFloat(e.target.value))}
-                    className="w-full accent-blue-500 cursor-pointer"
-                  />
+                  <input type="range" min="0" max="4" step="0.5" value={letterSpacing} onChange={(e) => onChangeLetterSpacing(parseFloat(e.target.value))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Letter spacing" />
                 </div>
-
-                {/* Word Spacing */}
                 <div>
-                  <div className="flex justify-between text-[11px] text-gray-300 mb-1">
+                  <div className="flex justify-between text-[11px] text-obsidian-muted mb-1">
                     <span>Word Spacing</span>
-                    <span className="font-mono text-blue-300">{wordSpacing}px</span>
+                    <span className="font-mono text-ambergold-400">{wordSpacing}px</span>
                   </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="8"
-                    step="1"
-                    value={wordSpacing}
-                    onChange={(e) => onChangeWordSpacing(parseInt(e.target.value))}
-                    className="w-full accent-blue-500 cursor-pointer"
-                  />
+                  <input type="range" min="0" max="8" step="1" value={wordSpacing} onChange={(e) => onChangeWordSpacing(parseInt(e.target.value, 10))} className="w-full accent-ambergold-500 cursor-pointer" aria-label="Word spacing" />
                 </div>
               </div>
             )}
           </div>
 
-          {/* Theme Selector Dropdown */}
+          {/* Theme Dropdown */}
           <div className="relative">
             <button
-              onClick={() => setShowThemeMenu(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-obsidian-800 hover:bg-obsidian-700 border border-obsidian-border text-gray-200"
+              onClick={() => { setShowThemeMenu((p) => !p); setShowTypographyMenu(false); setShowDocsMenu(false); setShowPresetsMenu(false); }}
+              className={menuBtn}
               title="Change Color Theme & Irlen Tint Overlays"
               aria-expanded={showThemeMenu}
             >
-              <Palette className="w-3.5 h-3.5 text-purple-400" />
+              <Palette className="w-3.5 h-3.5 text-ambergold-400" />
               <span>Theme</span>
               <ChevronDown className="w-3 h-3 opacity-60" />
             </button>
-
             {showThemeMenu && (
-              <div className="absolute top-full right-0 mt-1.5 w-60 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 animate-in fade-in space-y-1">
-                <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1">WCAG 2.2 AAA Palettes</div>
-                {THEMES.map(t => (
+              <div className="absolute top-full right-0 mt-1.5 w-64 bg-obsidian-800 border border-obsidian-border rounded-xl shadow-2xl p-2 z-50 space-y-1 animate-in fade-in">
+                <div className="text-[10px] font-bold text-obsidian-muted uppercase px-2 py-1 font-mono">WCAG 2.2 AAA palettes</div>
+                {THEMES.map((t) => (
                   <button
                     key={t.id}
-                    onClick={() => { onChangeTheme(t.id); setShowThemeMenu(false); }}
-                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
-                      theme === t.id ? 'bg-blue-900/40 text-blue-300 font-bold' : 'hover:bg-obsidian-700 text-gray-300'
+                    onClick={() => { onChangeTheme(t.id); closeMenus(); }}
+                    className={`w-full min-h-[44px] flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition ${
+                      theme === t.id ? 'bg-ambergold-500/15 text-ambergold-400 font-bold' : 'hover:bg-obsidian-700 text-obsidian-text'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="w-3.5 h-3.5 rounded-full border border-gray-500" style={{ backgroundColor: t.bg }}></span>
+                      <span className="w-3.5 h-3.5 rounded-full border border-obsidian-border" style={{ backgroundColor: t.bg }} />
                       <span>{t.name}</span>
                     </div>
-                    {theme === t.id && <span className="text-blue-400 text-[10px]">✓</span>}
+                    {theme === t.id && <span className="text-ambergold-400 text-[10px]">✓</span>}
                   </button>
                 ))}
               </div>
@@ -399,30 +382,15 @@ export default function Navbar({
           </div>
         </div>
 
-        {/* Right: Hackathon Modals (Persona Simulator & Deliverables) */}
-        <div className="flex items-center gap-2">
-          
-          {/* Persona Barrier Simulator Trigger */}
-          <button
-            onClick={onOpenPersonaSimulator}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white shadow-md shadow-orange-500/20 transition-all active:scale-95"
-            title="Interactive ADHD & Dyslexia Barrier Simulator (Alt+S)"
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Barrier Sandbox</span>
-          </button>
-
-          {/* Hackathon Deliverables Modal Trigger */}
-          <button
-            onClick={onOpenDeliverablesModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-md shadow-indigo-500/20 transition-all active:scale-95"
-            title="View Hackathon Deliverables: WCAG, User Research & Prompt Logs (Alt+D)"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Deliverables</span>
-          </button>
-        </div>
-
+        {/* Deliverables Button */}
+        <button
+          onClick={onOpenDeliverablesModal}
+          className="flex items-center gap-1.5 min-h-[44px] px-4 py-2 text-xs font-bold rounded-full bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20 transition-all active:scale-95"
+          title="View Hackathon Deliverables (Alt+D)"
+        >
+          <FileText className="w-3.5 h-3.5" />
+          <span>Deliverables</span>
+        </button>
       </div>
     </header>
   );

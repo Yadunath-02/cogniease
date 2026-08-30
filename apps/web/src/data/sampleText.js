@@ -8,7 +8,7 @@ export const SAMPLE_TEXTS = [
     id: 'legal-tos',
     title: '📜 Legal Terms & Liability Waiver',
     category: 'Legal / Contract',
-    difficulty: 'Flesch-Kincaid Grade 17.8 (Post-Graduate)',
+    difficulty: 'Flesch-Kincaid Grade 26.5 (Post-Graduate)',
     rawText: `Notwithstanding anything to the contrary herein contained, the Service Provider, its affiliates, directors, employees, and authorized agents shall not be held liable under any circumstances for any consequential, indirect, punitive, special, or incidental damages whatsoever arising out of or in connection with the utilization or inability to utilize the platform, including but not limited to loss of commercial goodwill, data corruption, system downtime, or business interruption, even if previously apprised of the possibility thereof.
 
 The User hereby indemnifies and covenants to hold harmless the indemnified parties against any third-party claims, liabilities, losses, costs, or reasonable attorney fees resulting from the User's breach of any covenant or representation set forth within this Master Services Agreement. Any dispute arising hereunder shall be resolved solely through binding, non-appealable arbitration within the exclusive jurisdiction of the designated arbitration tribunal.`,
@@ -45,6 +45,20 @@ Side Effects and Safety:
 • Doctors lowered the medicine dose for 14 out of 100 patients to keep them safe.`
   },
   {
+    id: 'tech-rfc',
+    title: '💻 Distributed Consensus Protocol (RFC)',
+    category: 'Computer Science',
+    difficulty: 'Flesch-Kincaid Grade 18.4 (Undergraduate)',
+    rawText: `In an asynchronous distributed state machine replication architecture, achieving Byzantine fault tolerance requires a supermajority quorum threshold of at least 2f + 1 non-faulty validator nodes in a network comprising 3f + 1 total participants. When an uncommitted log entry is proposed by the elected primary leader, followers append the cryptographic digest to their local write-ahead log upon verifying epoch validity.
+
+If network partition anomalies prevent quorum convergence before the randomized heartbeat election timeout expires, non-primary nodes initiate leader election view transitions to prevent catastrophic state divergence and ensure deterministic linearizability across partitioned topologies.`,
+    simplifiedText: `How Distributed Computer Networks Agree:
+• The Big Goal: Make sure computers in a network agree on the same data, even if some computers crash or send false messages.
+• The 2/3 Majority Rule: If up to 'f' computers fail, the network needs at least '3f + 1' total computers to keep working safely.
+• Proposing Changes: The leader computer sends a change request. Other computers check that the leader is legitimate before saving it.
+• Handling Network Problems: If the leader loses connection or stops responding, the remaining computers quickly vote for a new leader to keep everything running smoothly.`
+  },
+  {
     id: 'financial-loan',
     title: '💳 Financial Mortgage APR Disclosure',
     category: 'Finance / Banking',
@@ -62,19 +76,5 @@ The periodic interest rate adjustment shall be subject to an interim ceiling adj
 Safety Caps to Protect You:
 • 6-Month Cap: Your rate can never go up by more than 2.0% in any single 6-month period.
 • Lifetime Cap: Over the entire life of your loan, your rate can never rise more than 6.0% higher than where it started.`
-  },
-  {
-    id: 'tech-distributed',
-    title: '💻 Distributed Consensus Protocol',
-    category: 'Computer Science',
-    difficulty: 'Flesch-Kincaid Grade 15.1 (Undergraduate)',
-    rawText: `In an asynchronous distributed state machine replication architecture, achieving Byzantine fault tolerance requires a supermajority quorum threshold of at least 2f + 1 non-faulty validator nodes in a network comprising 3f + 1 total participants. When an uncommitted log entry is proposed by the elected primary leader, followers append the cryptographic digest to their local write-ahead log upon verifying epoch validity.
-
-If network partition anomalies prevent quorum convergence before the randomized heartbeat election timeout expires, non-primary nodes initiate leader election view transitions to prevent catastrophic state divergence and ensure deterministic linearizability.`,
-    simplifiedText: `How Distributed Computer Networks Agree:
-• The Big Goal: Make sure computers in a network agree on the same data, even if some computers crash or send false messages.
-• The 2/3 Majority Rule: If up to 'f' computers fail, the network needs at least '3f + 1' total computers to keep working safely.
-• Proposing Changes: The leader computer sends a change request. Other computers check that the leader is legitimate before saving it.
-• Handling Network Problems: If the leader loses connection or stops responding, the remaining computers quickly vote for a new leader to keep everything running smoothly.`
   }
 ];

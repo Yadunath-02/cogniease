@@ -1,35 +1,38 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Navbar from './components/Navbar';
 import DualPaneWorkspace from './components/DualPaneWorkspace';
 import ReadingRuler from './components/ReadingRuler';
 import PersonaSimulator from './components/PersonaSimulator';
 import DeliverablesModal from './components/DeliverablesModal';
-import { SpeechEngine } from '@cogniease/core';
+import { SpeechEngine, extractWords } from '@cogniease/core';
 import { SAMPLE_TEXTS } from './data/sampleText';
 
 export default function App() {
-  // 1. Text Content State
+  // 1. Text Content & Sample Selection State
   const [sourceText, setSourceText] = useState(SAMPLE_TEXTS[0].rawText);
+  const [selectedSampleId, setSelectedSampleId] = useState(SAMPLE_TEXTS[0].id);
+  const [surfaceMode, setSurfaceMode] = useState('bionic'); // 'bionic' | 'chunks' | 'plain'
+  const [activePersona, setActivePersona] = useState(null); // null | 'adhd' | 'dyslexia' | 'sensory'
 
   // 2. Assistive Feature States
   const [bionicEnabled, setBionicEnabled] = useState(true);
   const [fixationRatio, setFixationRatio] = useState(0.45);
-  
+
   const [rulerEnabled, setRulerEnabled] = useState(false);
   const [rulerMode, setRulerMode] = useState('focus-line');
 
   // 3. Typography States
-  const [fontFamily, setFontFamily] = useState('dyslexic'); // 'dyslexic' | 'atkinson' | 'lexend' | 'sans' | 'mono' | 'serif'
+  const [fontFamily, setFontFamily] = useState('dyslexic');
   const [fontSize, setFontSize] = useState(18);
   const [lineHeight, setLineHeight] = useState(1.85);
   const [letterSpacing, setLetterSpacing] = useState(1.0);
   const [wordSpacing, setWordSpacing] = useState(2.0);
 
   // 4. Theme State
-  const [theme, setTheme] = useState('obsidian'); // 'obsidian' | 'light' | 'sepia' | 'mint' | 'irlen' | 'contrast'
+  const [theme, setTheme] = useState('obsidian');
 
   // 5. Speech Synthesis States
-  const [ttsState, setTtsState] = useState('stopped'); // 'playing' | 'paused' | 'stopped'
+  const [ttsState, setTtsState] = useState('stopped');
   const [ttsRate, setTtsRate] = useState(1.0);
   const [activeTTSWordIndex, setActiveTTSWordIndex] = useState(null);
   const speechEngineRef = useRef(null);
@@ -38,14 +41,26 @@ export default function App() {
   const [isPersonaSimulatorOpen, setIsPersonaSimulatorOpen] = useState(false);
   const [isDeliverablesModalOpen, setIsDeliverablesModalOpen] = useState(false);
 
-  // 7. ARIA Screen Reader Live Region Announcer
+  // 7. ARIA Live Screen Reader Announcer
   const [a11yAnnouncement, setA11yAnnouncement] = useState('CogniEase Loaded. Bionic reading active.');
 
   const announce = (msg) => {
     setA11yAnnouncement(msg);
   };
 
-  // Initialize Web Speech Engine
+  const totalWords = extractWords(sourceText).length;
+
+  const handleLoadSample = (sampleId) => {
+    const sample = SAMPLE_TEXTS.find((s) => s.id === sampleId);
+    if (sample) {
+      setSelectedSampleId(sampleId);
+      setSourceText(sample.rawText);
+      setSurfaceMode('bionic');
+      announce(`Loaded ${sample.title}`);
+    }
+  };
+
+  // Initialize Speech Synthesis Engine
   useEffect(() => {
     speechEngineRef.current = new SpeechEngine({ rate: ttsRate });
 
@@ -73,7 +88,6 @@ export default function App() {
     };
   }, []);
 
-  // Update TTS Rate dynamically
   const handleChangeTTSRate = (rate) => {
     setTtsRate(rate);
     if (speechEngineRef.current) {
@@ -81,7 +95,6 @@ export default function App() {
     }
   };
 
-  // TTS Controls
   const handlePlayTTS = () => {
     if (!speechEngineRef.current) return;
     announce('Starting speech with word-by-word karaoke highlight.');
@@ -109,7 +122,6 @@ export default function App() {
     }
   };
 
-  // Presets Handler
   const handleApplyPreset = (presetKey) => {
     switch (presetKey) {
       case 'adhd':
@@ -123,6 +135,7 @@ export default function App() {
         setLetterSpacing(1.5);
         setWordSpacing(3.0);
         setTheme('obsidian');
+        setSurfaceMode('bionic');
         announce('Applied ADHD Focus preset with Bionic Saccades and Reading Ruler.');
         break;
 
@@ -136,6 +149,7 @@ export default function App() {
         setLetterSpacing(2.0);
         setWordSpacing(4.0);
         setTheme('sepia');
+        setSurfaceMode('bionic');
         announce('Applied Dyslexia Comfort preset with OpenDyslexic typeface and Warm Sepia tint.');
         break;
 
@@ -148,6 +162,7 @@ export default function App() {
         setLetterSpacing(1.0);
         setWordSpacing(2.0);
         setTheme('mint');
+        setSurfaceMode('chunks');
         announce('Applied Sensory Calming preset with Soft Mint tint.');
         break;
 
@@ -161,6 +176,7 @@ export default function App() {
         setLetterSpacing(1.5);
         setWordSpacing(3.0);
         setTheme('contrast');
+        setSurfaceMode('bionic');
         announce('Applied High Contrast Gold preset with 17:1 contrast ratio.');
         break;
 
@@ -175,63 +191,79 @@ export default function App() {
         setLetterSpacing(1.0);
         setWordSpacing(2.0);
         setTheme('obsidian');
+        setSurfaceMode('bionic');
         announce('Reset to Default settings.');
         break;
     }
   };
 
-  // Global Keyboard Shortcuts
+  const handlePersonaDock = (personaId) => {
+    if (activePersona === personaId) {
+      setActivePersona(null);
+      handleApplyPreset('default');
+      announce('Persona sandbox cleared.');
+      return;
+    }
+
+    setActivePersona(personaId);
+    if (personaId === 'adhd') {
+      handleApplyPreset('adhd');
+      announce('ADHD Wandering simulation active. Distractors overlay the reading surface.');
+    } else if (personaId === 'dyslexia') {
+      handleApplyPreset('dyslexia');
+      announce('Dyslexia Drift simulation active. Glyph jitter is applied to the reading surface.');
+    } else if (personaId === 'sensory') {
+      handleApplyPreset('sensory');
+      announce('Sensory Overload simulation active. Glare veil is applied to the reading surface.');
+    }
+  };
+
+  // Keyboard Navigation & Shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Ignore when typing inside text inputs
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) {
         return;
       }
 
-      // Alt + B: Toggle Bionic
       if (e.altKey && e.key.toLowerCase() === 'b') {
         e.preventDefault();
-        setBionicEnabled(b => {
+        setBionicEnabled((b) => {
           const next = !b;
           announce(next ? 'Bionic reading enabled' : 'Bionic reading disabled');
           return next;
         });
+        setSurfaceMode('bionic');
       }
 
-      // Alt + R: Toggle Reading Ruler
       if (e.altKey && e.key.toLowerCase() === 'r') {
         e.preventDefault();
-        setRulerEnabled(r => {
+        setRulerEnabled((r) => {
           const next = !r;
           announce(next ? 'Reading ruler enabled' : 'Reading ruler disabled');
           return next;
         });
       }
 
-      // Alt + S: Open Persona Simulator
       if (e.altKey && e.key.toLowerCase() === 's') {
         e.preventDefault();
-        setIsPersonaSimulatorOpen(prev => !prev);
+        setIsPersonaSimulatorOpen((prev) => !prev);
       }
 
-      // Alt + D: Open Deliverables
       if (e.altKey && e.key.toLowerCase() === 'd') {
         e.preventDefault();
-        setIsDeliverablesModalOpen(prev => !prev);
+        setIsDeliverablesModalOpen((prev) => !prev);
       }
 
-      // Alt + T: Cycle Themes
       if (e.altKey && e.key.toLowerCase() === 't') {
         e.preventDefault();
         const themes = ['obsidian', 'light', 'sepia', 'mint', 'irlen', 'contrast'];
-        setTheme(current => {
+        setTheme((current) => {
           const next = themes[(themes.indexOf(current) + 1) % themes.length];
           announce(`Switched theme to ${next}`);
           return next;
         });
       }
 
-      // Space: Toggle Speech Play / Pause
       if (e.code === 'Space' && e.target === document.body) {
         e.preventDefault();
         if (ttsState === 'playing') {
@@ -243,10 +275,10 @@ export default function App() {
         }
       }
 
-      // Escape: Close active modals
       if (e.key === 'Escape') {
         setIsPersonaSimulatorOpen(false);
         setIsDeliverablesModalOpen(false);
+        setActivePersona(null);
       }
     };
 
@@ -254,40 +286,59 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [ttsState, sourceText, ttsRate]);
 
+  const dockPill = (id, emoji, label) => {
+    const active = activePersona === id;
+    return (
+      <button
+        type="button"
+        onClick={() => handlePersonaDock(id)}
+        onDoubleClick={() => setIsPersonaSimulatorOpen(true)}
+        aria-pressed={active}
+        className={`min-h-[44px] px-4 py-2 rounded-full text-xs font-bold border transition-all whitespace-nowrap flex items-center gap-1.5 ${
+          active
+            ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/30'
+            : 'bg-obsidian-800 border-obsidian-border text-obsidian-text hover:border-ambergold-500/50 hover:text-ambergold-400'
+        }`}
+      >
+        <span>{emoji}</span>
+        <span>{label}</span>
+      </button>
+    );
+  };
+
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-200 theme-${theme} bg-obsidian-900 text-obsidian-text`}>
-      
+    <div className={`min-h-screen flex flex-col transition-colors duration-200 theme-${theme} bg-obsidian-900 text-obsidian-text font-ui`}>
+
       {/* ARIA Live Region for Screen Readers */}
       <div aria-live="polite" aria-atomic="true" className="sr-only" id="a11y-status">
         {a11yAnnouncement}
       </div>
 
       {/* Skip to Main Content Link */}
-      <a 
-        href="#main-workspace" 
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg font-bold shadow-2xl"
+      <a
+        href="#main-workspace"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-ambergold-500 focus:text-obsidian-900 focus:rounded-lg font-bold shadow-2xl"
       >
         Skip to main reading workspace
       </a>
 
-      {/* Sticky Accessibility Navigation Bar */}
+      {/* Sticky Top Navigation */}
       <Navbar
         bionicEnabled={bionicEnabled}
         onToggleBionic={() => {
-          setBionicEnabled(b => !b);
+          setBionicEnabled((b) => !b);
           announce(!bionicEnabled ? 'Bionic reading enabled' : 'Bionic reading disabled');
+          setSurfaceMode('bionic');
         }}
         fixationRatio={fixationRatio}
         onChangeFixationRatio={setFixationRatio}
-
         rulerEnabled={rulerEnabled}
         onToggleRuler={() => {
-          setRulerEnabled(r => !r);
+          setRulerEnabled((r) => !r);
           announce(!rulerEnabled ? 'Reading ruler active' : 'Reading ruler disabled');
         }}
         rulerMode={rulerMode}
         onChangeRulerMode={setRulerMode}
-
         ttsState={ttsState}
         onPlayTTS={handlePlayTTS}
         onPauseTTS={handlePauseTTS}
@@ -295,7 +346,8 @@ export default function App() {
         onStopTTS={handleStopTTS}
         ttsRate={ttsRate}
         onChangeTTSRate={handleChangeTTSRate}
-
+        activeTTSWordIndex={activeTTSWordIndex}
+        totalWords={totalWords}
         fontFamily={fontFamily}
         onChangeFontFamily={setFontFamily}
         fontSize={fontSize}
@@ -306,16 +358,15 @@ export default function App() {
         onChangeLetterSpacing={setLetterSpacing}
         wordSpacing={wordSpacing}
         onChangeWordSpacing={setWordSpacing}
-
         theme={theme}
         onChangeTheme={setTheme}
         onApplyPreset={handleApplyPreset}
-
-        onOpenPersonaSimulator={() => setIsPersonaSimulatorOpen(true)}
+        selectedSampleId={selectedSampleId}
+        onLoadSample={handleLoadSample}
         onOpenDeliverablesModal={() => setIsDeliverablesModalOpen(true)}
       />
 
-      {/* Main Dual-Pane Reading Workspace */}
+      {/* Main Dual-Pane Cognitive Workspace & Bento Telemetry */}
       <main id="main-workspace" role="main" className="flex-1">
         <DualPaneWorkspace
           sourceText={sourceText}
@@ -330,10 +381,15 @@ export default function App() {
           theme={theme}
           activeTTSWordIndex={activeTTSWordIndex}
           onPlayTTS={handlePlayTTS}
+          selectedSampleId={selectedSampleId}
+          onLoadSample={handleLoadSample}
+          surfaceMode={surfaceMode}
+          onChangeSurfaceMode={setSurfaceMode}
+          activePersona={activePersona}
         />
       </main>
 
-      {/* Cursor-Tracking Focus Reading Ruler Overlay */}
+      {/* Reading Ruler Spotlight Component */}
       <ReadingRuler
         enabled={rulerEnabled}
         mode={rulerMode}
@@ -341,28 +397,35 @@ export default function App() {
         onModeChange={setRulerMode}
       />
 
-      {/* Interactive Persona Barrier Simulator Modal */}
+      {/* Persona Barrier Simulator Modal */}
       <PersonaSimulator
         isOpen={isPersonaSimulatorOpen}
         onClose={() => setIsPersonaSimulatorOpen(false)}
       />
 
-      {/* Hackathon Deliverables Viewer Modal */}
+      {/* Deliverables Modal */}
       <DeliverablesModal
         isOpen={isDeliverablesModalOpen}
         onClose={() => setIsDeliverablesModalOpen(false)}
       />
 
-      {/* Accessible Footer */}
-      <footer className="border-t border-obsidian-border bg-obsidian-900/90 py-4 px-6 text-center text-xs text-obsidian-muted">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          <span>🧠 CogniEase • Built for <b>THRIVE 26 Hackathon</b></span>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>Hotkeys: <kbd className="bg-obsidian-800 px-1.5 py-0.5 rounded border border-obsidian-border">Alt+B</kbd> Bionic • <kbd className="bg-obsidian-800 px-1.5 py-0.5 rounded border border-obsidian-border">Alt+R</kbd> Ruler • <kbd className="bg-obsidian-800 px-1.5 py-0.5 rounded border border-obsidian-border">Space</kbd> Speech</span>
-          </div>
-        </div>
-      </footer>
-
+      {/* Bottom Persona Simulator Floating Dock */}
+      <nav
+        className="fixed bottom-5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-3 py-2 rounded-full bg-obsidian-900/95 border border-obsidian-border shadow-dock backdrop-blur-md"
+        aria-label="Persona sandbox dock"
+      >
+        {dockPill('adhd', '⚡', 'ADHD Wandering')}
+        {dockPill('dyslexia', '🔤', 'Dyslexia Drift')}
+        {dockPill('sensory', '🚨', 'Sensory Overload')}
+        <button
+          type="button"
+          onClick={() => setIsPersonaSimulatorOpen(true)}
+          className="min-h-[44px] px-3 py-2 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-obsidian-muted hover:text-ambergold-400 border border-transparent hover:border-obsidian-border"
+          title="Open full barrier sandbox (Alt+S)"
+        >
+          Sandbox
+        </button>
+      </nav>
     </div>
   );
 }

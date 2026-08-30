@@ -1,20 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import {
   Sparkles,
   Copy,
   Check,
-  RotateCcw,
   BookOpen,
-  ArrowRight,
-  TrendingDown,
-  Clock,
-  Award,
-  ListFilter,
   FileText,
   Volume2,
-  FileCheck2,
-  HelpCircle,
-  Wand2
+  Wand2,
+  TrendingDown,
+  Gauge,
+  Eye,
+  Layers,
+  Download,
+  Printer
 } from 'lucide-react';
 import { parseBionicTokens, countSyllables, analyzeReadability } from '@cogniease/core';
 import { SAMPLE_TEXTS } from '../data/sampleText';
@@ -31,138 +29,195 @@ export default function DualPaneWorkspace({
   wordSpacing,
   theme,
   activeTTSWordIndex,
-  onPlayTTS
+  onPlayTTS,
+  selectedSampleId,
+  onLoadSample,
+  surfaceMode,
+  onChangeSurfaceMode,
+  activePersona
 }) {
   const [copied, setCopied] = useState(false);
-  const [selectedSampleId, setSelectedSampleId] = useState('legal-tos');
   const [showSyllables, setShowSyllables] = useState(false);
   const [isAiSimplifying, setIsAiSimplifying] = useState(false);
   const [plainLanguageActive, setPlainLanguageActive] = useState(false);
+  const [jitterTick, setJitterTick] = useState(0);
 
-  // Readability Analysis
-  const readabilityMetrics = useMemo(() => {
-    return analyzeReadability(sourceText);
-  }, [sourceText]);
+  const textareaRef = useRef(null);
+  const gutterRef = useRef(null);
 
-  // Bionic Tokens Computation
-  const tokens = useMemo(() => {
-    return parseBionicTokens(sourceText, { fixationRatio });
-  }, [sourceText, fixationRatio]);
+  const readabilityMetrics = useMemo(() => analyzeReadability(sourceText), [sourceText]);
+  const tokens = useMemo(() => parseBionicTokens(sourceText, { fixationRatio }), [sourceText, fixationRatio]);
+  const lineCount = Math.max(1, sourceText.split('\n').length);
+  const saccadicReduction = bionicEnabled ? Math.round(28 + fixationRatio * 22) : 0;
 
-  // Load Sample Text
-  const handleLoadSample = (sampleId) => {
-    const sample = SAMPLE_TEXTS.find(s => s.id === sampleId);
-    if (sample) {
-      setSelectedSampleId(sampleId);
-      onChangeSourceText(sample.rawText);
-      setPlainLanguageActive(false);
+  // Dyslexia simulation jitter interval
+  useEffect(() => {
+    if (activePersona !== 'dyslexia') return;
+    const interval = setInterval(() => setJitterTick((t) => t + 1), 450);
+    return () => clearInterval(interval);
+  }, [activePersona]);
+
+  const syncGutter = () => {
+    if (gutterRef.current && textareaRef.current) {
+      gutterRef.current.scrollTop = textareaRef.current.scrollTop;
     }
   };
 
-  // Plain Language Transformation Simulator (using few-shot plain language maps or algorithmic decomposition)
   const handleTogglePlainLanguage = () => {
-    const currentSample = SAMPLE_TEXTS.find(s => s.rawText === sourceText || s.simplifiedText === sourceText);
-    
+    const currentSample = SAMPLE_TEXTS.find((s) => s.rawText === sourceText || s.simplifiedText === sourceText);
+
     if (plainLanguageActive) {
-      // Revert to raw
-      if (currentSample) {
-        onChangeSourceText(currentSample.rawText);
-      }
+      if (currentSample) onChangeSourceText(currentSample.rawText);
       setPlainLanguageActive(false);
+      onChangeSurfaceMode?.('bionic');
     } else {
-      // Simplify
       setIsAiSimplifying(true);
       setTimeout(() => {
         if (currentSample) {
           onChangeSourceText(currentSample.simplifiedText);
         } else {
-          // Heuristic simplification for custom user text
           const simplified = sourceText
             .split(/([.?!]+)/)
-            .filter(s => s.trim().length > 0)
-            .map(s => s.trim())
-            .filter(s => !/^[.?!]+$/.test(s))
-            .map(s => `• ${s}.`)
+            .filter((s) => s.trim().length > 0)
+            .map((s) => s.trim())
+            .filter((s) => !/^[.?!]+$/.test(s))
+            .map((s) => `• ${s}.`)
             .join('\n\n');
           onChangeSourceText(simplified || sourceText);
         }
         setIsAiSimplifying(false);
         setPlainLanguageActive(true);
+        onChangeSurfaceMode?.('plain');
       }, 400);
     }
   };
 
-  // Copy Accessible Output
   const handleCopy = () => {
     navigator.clipboard.writeText(sourceText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Render tokens with Bionic, Syllables, and TTS Karaoke
+  const handleExportPDF = () => {
+    window.print();
+  };
+
+  const handleSurfaceTab = (mode) => {
+    onChangeSurfaceMode?.(mode);
+    if (mode === 'plain' && !plainLanguageActive) {
+      handleTogglePlainLanguage();
+    } else if (mode !== 'plain' && plainLanguageActive) {
+      const currentSample = SAMPLE_TEXTS.find((s) => s.simplifiedText === sourceText);
+      if (currentSample) onChangeSourceText(currentSample.rawText);
+      setPlainLanguageActive(false);
+    }
+  };
+
+  const renderWordToken = (token) => {
+    const isTTSActive = activeTTSWordIndex === token.wordIndex;
+    const useBionic = bionicEnabled && !showSyllables && surfaceMode !== 'plain';
+
+    const inner = showSyllables ? (
+      <span className="syllable-breakdown font-medium">
+        {token.boldPart}
+        {token.restPart}
+        <span className="text-[10px] text-ambergold-400/80 align-super ml-0.5 font-mono">
+          [{countSyllables(token.cleanWord)}]
+        </span>
+      </span>
+    ) : useBionic ? (
+      <>
+        <b className="bionic-fixation font-black">{token.boldPart}</b>
+        <span>{token.restPart}</span>
+      </>
+    ) : (
+      <span>
+        {token.boldPart}
+        {token.restPart}
+      </span>
+    );
+
+    let body = inner;
+    if (activePersona === 'dyslexia' && token.cleanWord) {
+      body = (
+        <span className={jitterTick % 2 === 0 ? 'sim-dyslexia-jitter' : 'sim-dyslexia-swap'}>
+          {inner}
+        </span>
+      );
+    }
+
+    return (
+      <span
+        key={token.id}
+        className={`inline-block transition-colors duration-100 ${isTTSActive ? 'karaoke-word-active' : ''}`}
+      >
+        {token.leadingPunct}
+        {body}
+        {token.trailingPunct}
+      </span>
+    );
+  };
+
   const renderInteractiveContent = () => {
     if (!sourceText.trim()) {
       return (
-        <div className="flex flex-col items-center justify-center py-20 text-center text-gray-500">
-          <BookOpen className="w-12 h-12 mb-3 stroke-[1.5] text-gray-600" />
+        <div className="flex flex-col items-center justify-center py-20 text-center text-obsidian-muted">
+          <BookOpen className="w-12 h-12 mb-3 stroke-[1.5]" />
           <p className="font-semibold text-sm">No text entered yet</p>
-          <p className="text-xs text-gray-400 mt-1 max-w-sm">
-            Type or paste complex text on the left, or choose from our preloaded legal and medical research excerpts.
+          <p className="text-xs mt-1 max-w-sm">
+            Type or paste complex text on the left, or choose a preset legal, medical, or technical excerpt.
           </p>
+        </div>
+      );
+    }
+
+    if (surfaceMode === 'chunks') {
+      const groups = [];
+      let current = [];
+      tokens.forEach((token) => {
+        if (token.type === 'newline') {
+          if (current.length) {
+            groups.push(current);
+            current = [];
+          }
+          return;
+        }
+        current.push(token);
+        const punct = token.trailingPunct || '';
+        if (token.type === 'word' && /[.!?]$/.test(punct.trim())) {
+          groups.push(current);
+          current = [];
+        }
+      });
+      if (current.length) groups.push(current);
+
+      return (
+        <div className="reading-content-body select-text space-y-1">
+          {groups.map((group, sIdx) => (
+            <div key={`chunk-${sIdx}`} className="sentence-chunk">
+              {group.map((token) => {
+                if (token.type === 'space') return <span key={token.id}>{token.raw}</span>;
+                if (token.type === 'html') {
+                  return <span key={token.id} dangerouslySetInnerHTML={{ __html: token.raw }} />;
+                }
+                if (token.type === 'word') return renderWordToken(token);
+                return <span key={token.id}>{token.raw}</span>;
+              })}
+            </div>
+          ))}
         </div>
       );
     }
 
     return (
       <div className="reading-content-body select-text">
-        {tokens.map((token, idx) => {
-          if (token.type === 'newline') {
-            return <div key={token.id} className="h-4" />;
-          }
-          if (token.type === 'space') {
-            return <span key={token.id}>{token.raw}</span>;
-          }
+        {tokens.map((token) => {
+          if (token.type === 'newline') return <div key={token.id} className="h-4" />;
+          if (token.type === 'space') return <span key={token.id}>{token.raw}</span>;
           if (token.type === 'html') {
             return <span key={token.id} dangerouslySetInnerHTML={{ __html: token.raw }} />;
           }
-
-          const isTTSActive = activeTTSWordIndex === token.wordIndex;
-
-          return (
-            <span
-              key={token.id}
-              className={`inline-block transition-colors duration-100 ${
-                isTTSActive ? 'karaoke-word-active' : ''
-              }`}
-            >
-              {token.leadingPunct}
-
-              {/* Syllable Breakdown Mode */}
-              {showSyllables ? (
-                <span className="syllable-breakdown font-medium">
-                  {token.boldPart}
-                  {token.restPart}
-                  <span className="text-[10px] text-blue-400/80 align-super ml-0.5 font-mono">
-                    [{countSyllables(token.cleanWord)}]
-                  </span>
-                </span>
-              ) : bionicEnabled ? (
-                /* Bionic Reading Fixation Mode */
-                <>
-                  <b className="bionic-fixation font-black">{token.boldPart}</b>
-                  <span>{token.restPart}</span>
-                </>
-              ) : (
-                /* Standard Plain Text Mode */
-                <span>
-                  {token.boldPart}
-                  {token.restPart}
-                </span>
-              )}
-
-              {token.trailingPunct}
-            </span>
-          );
+          return renderWordToken(token);
         })}
       </div>
     );
@@ -182,265 +237,296 @@ export default function DualPaneWorkspace({
 
   const getThemeClasses = () => {
     switch (theme) {
-      case 'light':
-        return 'bg-white text-gray-900 border-gray-200';
-      case 'sepia':
-        return 'bg-[#FBF0D9] text-[#2D2319] border-[#E2CC9C]';
-      case 'mint':
-        return 'bg-[#EBF7EE] text-[#132B1A] border-[#BBE0C7]';
-      case 'irlen':
-        return 'bg-[#E6F0FA] text-[#0E2338] border-[#A8CBF0]';
-      case 'contrast':
-        return 'bg-black text-[#FFE600] border-[#FFE600]';
+      case 'light': return 'bg-white text-gray-900 border-gray-200';
+      case 'sepia': return 'bg-[#FBF0D9] text-[#2D2319] border-[#E2CC9C]';
+      case 'mint': return 'bg-[#EBF7EE] text-[#132B1A] border-[#BBE0C7]';
+      case 'irlen': return 'bg-[#E6F0FA] text-[#0E2338] border-[#A8CBF0]';
+      case 'contrast': return 'bg-black text-[#FFE600] border-[#FFE600]';
       case 'obsidian':
-      default:
-        return 'bg-obsidian-800 text-obsidian-text border-obsidian-border';
+      default: return 'bg-obsidian-800 text-obsidian-text border-obsidian-border';
     }
   };
 
+  const grade = readabilityMetrics.fleschKincaidGrade;
+  const gradeBar = Math.min(100, (grade / 20) * 100);
+  const ease = readabilityMetrics.fleschReadingEase;
+  const easeBar = Math.min(100, ease);
+  const complexBar = Math.min(100, readabilityMetrics.complexWordPercentage);
+
+  const tabClass = (id) =>
+    `min-h-[44px] px-3 py-2 text-[11px] font-bold rounded-lg border transition ${
+      surfaceMode === id
+        ? 'bg-ambergold-500 border-ambergold-400 text-obsidian-900 shadow-sm'
+        : 'bg-black/20 border-current/20 hover:bg-black/30'
+    }`;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      
-      {/* Top Banner: Readability Analytics Scorecard */}
-      <section 
-        className="mb-6 rounded-2xl bg-obsidian-800/90 border border-obsidian-border p-4 shadow-xl text-white backdrop-blur-md"
-        aria-label="Real-time Linguistic Readability Scorecard"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-blue-900/50 text-blue-400 border border-blue-700/50">
-              <Award className="w-5 h-5" />
-            </div>
+    <div className="max-w-[1440px] mx-auto px-4 pt-5 pb-28">
+
+      {/* Bento Strip: 4 Telemetry Scorecards */}
+      <section className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3" aria-label="Linguistic accessibility telemetry">
+        
+        {/* 1. Grade Level Card */}
+        <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
+          <div className="flex items-start justify-between gap-2">
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold tracking-tight text-white">
-                  Linguistic Accessibility Scorecard
-                </h2>
-                <span className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
-                  readabilityMetrics.fleschReadingEase >= 70 
-                    ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700' 
-                    : readabilityMetrics.fleschReadingEase >= 50
-                    ? 'bg-amber-950/80 text-amber-300 border-amber-700'
-                    : 'bg-rose-950/80 text-rose-300 border-rose-700'
-                }`}>
-                  {readabilityMetrics.difficultyRating}
-                </span>
-              </div>
-              <p className="text-xs text-gray-400 mt-0.5">
-                Targeting WCAG 2.2 AAA Grade 6–8 plain language standard
+              <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Grade Level</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-ambergold-400">Grade {grade}</p>
+            </div>
+            <Gauge className="w-4 h-4 text-ambergold-500 mt-1" aria-hidden="true" />
+          </div>
+          <span className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full border font-mono ${
+            readabilityMetrics.difficultyLevel === 'easy' || readabilityMetrics.difficultyLevel === 'accessible'
+              ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
+              : readabilityMetrics.difficultyLevel === 'extreme' || readabilityMetrics.difficultyLevel === 'difficult'
+              ? 'bg-rose-950/80 text-rose-300 border-rose-700'
+              : 'bg-ambergold-500/15 text-ambergold-400 border-ambergold-500/40'
+          }`}>
+            {grade >= 14 ? 'Complex (Post-Grad)' : readabilityMetrics.difficultyRating.split('(')[0].trim()}
+          </span>
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
+            <div className={`h-full rounded-full ${grade >= 14 ? 'bg-rose-500' : grade >= 10 ? 'bg-ambergold-500' : 'bg-emerald-500'}`} style={{ width: `${gradeBar}%` }} />
+          </div>
+        </article>
+
+        {/* 2. Reading Ease Card */}
+        <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
+          <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Reading Ease</p>
+          <p className="mt-1 font-mono text-2xl font-bold text-obsidian-text">
+            {ease} <span className="text-sm text-obsidian-muted">/ 100</span>
+          </p>
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
+            <div className={`h-full rounded-full ${ease >= 70 ? 'bg-emerald-500' : ease >= 50 ? 'bg-ambergold-500' : 'bg-rose-500'}`} style={{ width: `${easeBar}%` }} />
+          </div>
+        </article>
+
+        {/* 3. Complex & Jargon Words Card */}
+        <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
+          <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Complex & Jargon Words</p>
+          <p className="mt-1 font-mono text-2xl font-bold text-ambergold-400">{readabilityMetrics.complexWordPercentage}%</p>
+          <p className="text-[11px] text-obsidian-muted mt-1 font-mono">{readabilityMetrics.complexWordCount} of {readabilityMetrics.wordCount} words ≥ 3 syllables</p>
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
+            <div className="h-full rounded-full bg-ambergold-600" style={{ width: `${complexBar}%` }} />
+          </div>
+        </article>
+
+        {/* 4. Saccadic Eye Reduction Metric */}
+        <article className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-obsidian-muted font-mono">Saccadic Eye Reduction</p>
+              <p className="mt-1 font-mono text-2xl font-bold text-emerald-400">
+                {saccadicReduction > 0 ? `−${saccadicReduction}%` : '0%'}
               </p>
             </div>
+            <TrendingDown className="w-4 h-4 text-emerald-400 mt-1" aria-hidden="true" />
           </div>
-
-          {/* Quick Metric Pills */}
-          <div className="flex flex-wrap items-center gap-3">
-            
-            {/* Flesch-Kincaid Grade Level */}
-            <div className="bg-obsidian-700/60 border border-obsidian-border rounded-xl px-3 py-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-semibold uppercase">Grade Level</span>
-              <span className="text-sm font-extrabold text-blue-300">
-                Grade {readabilityMetrics.fleschKincaidGrade}
-              </span>
-            </div>
-
-            {/* Flesch Reading Ease */}
-            <div className="bg-obsidian-700/60 border border-obsidian-border rounded-xl px-3 py-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-semibold uppercase">Reading Ease</span>
-              <span className={`text-sm font-extrabold ${
-                readabilityMetrics.fleschReadingEase >= 70 ? 'text-emerald-400' : 'text-amber-400'
-              }`}>
-                {readabilityMetrics.fleschReadingEase} / 100
-              </span>
-            </div>
-
-            {/* Gunning Fog */}
-            <div className="bg-obsidian-700/60 border border-obsidian-border rounded-xl px-3 py-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-semibold uppercase">Gunning Fog</span>
-              <span className="text-sm font-extrabold text-indigo-300">
-                {readabilityMetrics.gunningFog}
-              </span>
-            </div>
-
-            {/* Estimated Read Time */}
-            <div className="bg-obsidian-700/60 border border-obsidian-border rounded-xl px-3 py-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-semibold uppercase">Read Time</span>
-              <div className="flex items-center gap-1 text-sm font-extrabold text-purple-300">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{readabilityMetrics.readingTimeMinutes} min</span>
-              </div>
-            </div>
-
-            {/* Word & Complex Words */}
-            <div className="bg-obsidian-700/60 border border-obsidian-border rounded-xl px-3 py-1.5 flex flex-col items-center">
-              <span className="text-[10px] text-gray-400 font-semibold uppercase">Complex Words</span>
-              <span className="text-sm font-extrabold text-orange-300">
-                {readabilityMetrics.complexWordPercentage}%
-              </span>
-            </div>
-
+          <p className="text-[11px] text-obsidian-muted mt-1">
+            {bionicEnabled ? 'Gold-weighted prefixes reduce eye wander' : 'Enable Bionic Read to reduce saccades'}
+          </p>
+          <div className="mt-3 h-1.5 rounded-full bg-obsidian-600 overflow-hidden" aria-hidden="true">
+            <div className="h-full rounded-full bg-emerald-500" style={{ width: `${saccadicReduction}%` }} />
           </div>
-        </div>
+        </article>
       </section>
 
-      {/* Dual Pane Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        
-        {/* ================= LEFT PANE: SOURCE TEXT ================= */}
-        <section 
-          className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-xl flex flex-col h-[650px]"
+      {/* Dual Pane Cognitive Workspace */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
+
+        {/* LEFT PANE: SOURCE DOCUMENT */}
+        <section
+          className="rounded-2xl bg-obsidian-800 border border-obsidian-border p-4 shadow-bento flex flex-col h-[650px]"
           aria-labelledby="raw-source-heading"
         >
-          {/* Header Controls */}
           <div className="flex items-center justify-between pb-3 border-b border-obsidian-border gap-2">
             <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-400" />
-              <h3 id="raw-source-heading" className="text-xs font-bold text-white uppercase tracking-wider">
+              <FileText className="w-4 h-4 text-ambergold-400" />
+              <h3 id="raw-source-heading" className="text-xs font-bold text-white uppercase tracking-wider font-mono">
                 Source Document
               </h3>
             </div>
-
-            {/* Sample Selector */}
-            <div className="flex items-center gap-2">
-              <select
-                value={selectedSampleId}
-                onChange={(e) => handleLoadSample(e.target.value)}
-                className="bg-obsidian-700 text-xs text-white rounded-lg px-2.5 py-1 border border-obsidian-border focus:ring-1 focus:ring-blue-500 max-w-[200px] truncate"
-                aria-label="Load Preloaded Complex Sample Text"
-              >
-                {SAMPLE_TEXTS.map(s => (
-                  <option key={s.id} value={s.id}>{s.title}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={selectedSampleId}
+              onChange={(e) => {
+                onLoadSample(e.target.value);
+                setPlainLanguageActive(false);
+              }}
+              className="min-h-[44px] bg-obsidian-700 text-xs text-white rounded-lg px-2.5 py-1 border border-obsidian-border max-w-[220px] truncate cursor-pointer font-mono"
+              aria-label="Load preloaded complex sample text"
+            >
+              {SAMPLE_TEXTS.map((s) => (
+                <option key={s.id} value={s.id}>{s.title}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Action Ribbon */}
           <div className="flex items-center justify-between py-2.5 text-xs gap-2">
             <button
               onClick={handleTogglePlainLanguage}
               disabled={isAiSimplifying}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg font-bold border transition-all ${
+              className={`flex items-center gap-1.5 min-h-[44px] px-3 py-1.5 rounded-lg font-bold border transition-all ${
                 plainLanguageActive
                   ? 'bg-emerald-600 border-emerald-400 text-white'
-                  : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 border-blue-400/50 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-ambergold-500 hover:bg-ambergold-400 border-ambergold-400 text-obsidian-900 shadow-md shadow-ambergold-500/20'
               }`}
-              title="Decompress complex jargon into Grade 6-8 plain language"
             >
               <Wand2 className={`w-3.5 h-3.5 ${isAiSimplifying ? 'animate-spin' : ''}`} />
-              <span>{plainLanguageActive ? 'Revert to Original Jargon' : '✨ AI Plain Language Simplifier'}</span>
+              <span>{plainLanguageActive ? 'Revert to Original Jargon' : '✨ AI Plain-English Simplifier'}</span>
             </button>
-
             <button
               onClick={() => { onChangeSourceText(''); setPlainLanguageActive(false); }}
-              className="text-gray-400 hover:text-rose-400 text-xs px-2 py-1 rounded hover:bg-obsidian-700 transition"
-              title="Clear input text"
+              className="min-h-[44px] text-obsidian-muted hover:text-rose-400 text-xs px-3 py-1 rounded-lg hover:bg-obsidian-700 transition"
             >
               Clear
             </button>
           </div>
 
-          {/* Textarea */}
-          <div className="flex-1 min-h-0 relative">
+          <div className="flex-1 min-h-0 relative flex rounded-xl border border-obsidian-border overflow-hidden bg-obsidian-900">
+            <div
+              ref={gutterRef}
+              className="line-gutter w-10 shrink-0 overflow-hidden py-3.5 bg-obsidian-950 border-r border-obsidian-border select-none"
+              aria-hidden="true"
+            >
+              {Array.from({ length: lineCount }, (_, i) => (
+                <div key={i} className="font-mono text-[10px] leading-[1.625rem] text-obsidian-muted text-right pr-2">
+                  {i + 1}
+                </div>
+              ))}
+            </div>
             <textarea
+              ref={textareaRef}
               value={sourceText}
               onChange={(e) => {
                 onChangeSourceText(e.target.value);
                 setPlainLanguageActive(false);
               }}
+              onScroll={syncGutter}
               placeholder="Paste any dense, complex document, legal clause, or research paper here..."
-              className="w-full h-full p-3.5 bg-obsidian-900 text-gray-200 rounded-xl border border-obsidian-border focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none font-sans text-sm leading-relaxed placeholder-gray-500 overflow-y-auto"
+              className="w-full h-full p-3.5 bg-transparent text-obsidian-text resize-none font-mono text-sm leading-[1.625rem] placeholder-obsidian-muted overflow-y-auto"
               aria-label="Raw text editor input"
+              spellCheck={false}
             />
           </div>
 
-          {/* Footer Statistics */}
-          <div className="flex items-center justify-between pt-3 border-t border-obsidian-border text-[11px] text-gray-400">
+          <div className="flex items-center justify-between pt-3 border-t border-obsidian-border text-[11px] text-obsidian-muted font-mono">
             <span>{readabilityMetrics.wordCount} words • {readabilityMetrics.characterCount} characters</span>
             <span>{readabilityMetrics.sentenceCount} sentences</span>
           </div>
         </section>
 
-        {/* ================= RIGHT PANE: ACCESSIBLE RENDER PANE ================= */}
-        <section 
-          className={`rounded-2xl border p-5 shadow-2xl flex flex-col h-[650px] transition-colors duration-200 ${getThemeClasses()}`}
+        {/* RIGHT PANE: ADAPTIVE READING SURFACE */}
+        <section
+          className={`relative rounded-2xl border p-5 shadow-bento flex flex-col h-[650px] transition-colors duration-200 overflow-hidden ${getThemeClasses()}`}
           aria-labelledby="accessible-render-heading"
         >
-          {/* Header Controls */}
-          <div className="flex items-center justify-between pb-3 border-b border-current/20 gap-2">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-500" />
-              <h3 id="accessible-render-heading" className="text-xs font-bold uppercase tracking-wider">
-                Cognitive Accessible Render
-              </h3>
+          {activePersona === 'adhd' && (
+            <>
+              <div className="absolute top-16 right-8 bg-purple-950/80 border border-purple-500 text-purple-200 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20">
+                💭 Did I respond to that Slack message?
+              </div>
+              <div className="absolute bottom-20 left-8 bg-ambergold-500/20 border border-ambergold-500 text-ambergold-400 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '1.5s' }}>
+                🔔 Phone buzzes in another room
+              </div>
+              <div className="absolute top-1/2 right-10 bg-rose-950/80 border border-rose-500 text-rose-200 text-xs px-3 py-1.5 rounded-full shadow-lg adhd-distractor-bubble pointer-events-none z-20" style={{ animationDelay: '2.5s' }}>
+                🧠 What was the first sentence again?
+              </div>
+            </>
+          )}
+          {activePersona === 'sensory' && (
+            <div className="sensory-overload-veil absolute inset-0 pointer-events-none z-10 bg-white mix-blend-overlay" aria-hidden="true" />
+          )}
+
+          <div className="flex flex-col gap-3 pb-3 border-b border-current/20 relative z-10">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-ambergold-500" />
+                <h3 id="accessible-render-heading" className="text-xs font-bold uppercase tracking-wider font-mono">
+                  Adaptive Reading Surface
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowSyllables((prev) => !prev)}
+                  className={`min-h-[44px] px-2.5 py-1 text-xs font-bold rounded-lg border transition ${
+                    showSyllables
+                      ? 'bg-ambergold-500 text-obsidian-900 border-ambergold-400'
+                      : 'bg-black/10 hover:bg-black/20 border-current/20'
+                  }`}
+                  title="Toggle syllable markers"
+                >
+                  Syllables
+                </button>
+                <button
+                  onClick={onPlayTTS}
+                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-bold rounded-lg bg-ambergold-500 hover:bg-ambergold-400 text-obsidian-900 transition shadow-sm"
+                  title="Listen with word-by-word karaoke highlight"
+                >
+                  <Volume2 className="w-3.5 h-3.5" />
+                  <span>Listen</span>
+                </button>
+                <button
+                  onClick={handleCopy}
+                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
+                  title="Copy adapted text"
+                >
+                  {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                </button>
+                <button
+                  onClick={handleExportPDF}
+                  className="flex items-center gap-1 min-h-[44px] px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
+                  title="Export or print PDF"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>Export PDF</span>
+                </button>
+              </div>
             </div>
 
-            {/* Utility Buttons */}
-            <div className="flex items-center gap-2">
-              
-              {/* Syllables Toggle */}
-              <button
-                onClick={() => setShowSyllables(prev => !prev)}
-                className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition ${
-                  showSyllables 
-                    ? 'bg-blue-600 text-white border-blue-400' 
-                    : 'bg-black/10 hover:bg-black/20 border-current/20'
-                }`}
-                title="Toggle Phonetic Syllable Count Markers"
-              >
-                Syllables
+            {/* Surface Mode Tabs: [Bionic Anchors] [Sentence Chunks] [Plain English] */}
+            <div className="flex flex-wrap gap-1.5" role="tablist" aria-label="Reading surface modes">
+              <button role="tab" aria-selected={surfaceMode === 'bionic'} className={tabClass('bionic')} onClick={() => handleSurfaceTab('bionic')}>
+                [Bionic Anchors]
               </button>
-
-              {/* TTS Listen Button */}
-              <button
-                onClick={onPlayTTS}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition shadow-sm"
-                title="Read aloud with synchronized word-by-word karaoke highlight"
-              >
-                <Volume2 className="w-3.5 h-3.5" />
-                <span>Listen</span>
+              <button role="tab" aria-selected={surfaceMode === 'chunks'} className={tabClass('chunks')} onClick={() => handleSurfaceTab('chunks')}>
+                [Sentence Chunks]
               </button>
-
-              {/* Copy Button */}
-              <button
-                onClick={handleCopy}
-                className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-black/10 hover:bg-black/20 border border-current/20 transition"
-                title="Copy rendered text"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
+              <button role="tab" aria-selected={surfaceMode === 'plain'} className={tabClass('plain')} onClick={() => handleSurfaceTab('plain')}>
+                [Plain English]
               </button>
             </div>
           </div>
 
-          {/* Reading Display Container */}
-          <div 
-            className={`flex-1 min-h-0 overflow-y-auto pr-2 py-4 ${getFontFamilyClass()}`}
+          <div
+            className={`flex-1 min-h-0 overflow-y-auto pr-2 py-4 relative z-10 ${getFontFamilyClass()} ${activePersona === 'adhd' ? 'opacity-80' : ''}`}
             style={{
               fontSize: `${fontSize}px`,
-              lineHeight: lineHeight,
+              lineHeight,
               letterSpacing: `${letterSpacing}px`,
               wordSpacing: `${wordSpacing}px`
             }}
             tabIndex="0"
             role="region"
-            aria-label="Accessible Transformed Reading Text"
+            aria-label="Accessible transformed reading text"
           >
             {renderInteractiveContent()}
           </div>
 
-          {/* Render Footer Status Bar */}
-          <div className="flex items-center justify-between pt-3 border-t border-current/20 text-[11px] opacity-80">
-            <div className="flex items-center gap-2">
-              <span className="font-bold">Active Assistive Features:</span>
-              <span>{bionicEnabled ? '⚡ Bionic Fixation' : 'Plain Text'}</span>
-              {showSyllables && <span>• 🔤 Syllables</span>}
-              {plainLanguageActive && <span>• ✨ Plain Language</span>}
+          <div className="flex items-center justify-between pt-3 border-t border-current/20 text-[11px] opacity-80 relative z-10">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Layers className="w-3.5 h-3.5" />
+              <span className="font-bold font-mono">Surface:</span>
+              <span className="font-mono">{surfaceMode === 'chunks' ? 'Sentence Chunks' : surfaceMode === 'plain' ? 'Plain English' : 'Bionic Anchors'}</span>
+              {showSyllables && <span>• Syllables</span>}
+              {activePersona && (
+                <span className="flex items-center gap-1 text-ambergold-500 font-mono font-bold">
+                  <Eye className="w-3 h-3" /> {activePersona}
+                </span>
+              )}
             </div>
-            <span>Font: {fontFamily}</span>
+            <span className="font-mono text-obsidian-muted">{fontFamily}</span>
           </div>
         </section>
-
       </div>
     </div>
   );

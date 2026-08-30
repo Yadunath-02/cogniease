@@ -11,20 +11,30 @@ export default {
         dyslexic: ['OpenDyslexic', 'Comic Sans MS', 'sans-serif'],
         lexend: ['Lexend', 'Inter', 'sans-serif'],
         atkinson: ['Atkinson Hyperlegible', 'sans-serif'],
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-        mono: ['Fira Code', 'JetBrains Mono', 'Consolas', 'monospace'],
+        sans: ['Inter', 'Lexend', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        ui: ['Inter', 'Lexend', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', 'monospace'],
         serif: ['Merriweather', 'Georgia', 'serif']
       },
       colors: {
+        ambergold: {
+          DEFAULT: '#F59E0B',
+          50: '#FFFBEB',
+          400: '#FBBF24',
+          500: '#F59E0B',
+          600: '#D97706',
+          700: '#B45309'
+        },
         obsidian: {
-          900: '#090D13',
-          800: '#0D1117',
-          700: '#161B22',
-          600: '#21262D',
+          950: '#07080B',
+          900: '#0A0C10',
+          800: '#0E1117',
+          700: '#141820',
+          600: '#1A1F28',
           text: '#F0F6FC',
-          muted: '#8B949E',
-          accent: '#58A6FF',
-          border: '#30363D'
+          muted: '#9AA3B2',
+          accent: '#F59E0B',
+          border: '#1E232D'
         },
         sepia: {
           bg: '#FBF0D9',
@@ -60,8 +70,16 @@ export default {
         }
       },
       boxShadow: {
-        'focus-aaa': '0 0 0 3px rgba(88, 166, 255, 0.6), 0 0 0 6px rgba(88, 166, 255, 0.2)',
-        'ruler-glow': '0 0 15px 3px rgba(255, 215, 0, 0.45)',
+        'focus-aaa': '0 0 0 3px rgba(245, 158, 11, 0.65), 0 0 0 6px rgba(245, 158, 11, 0.18)',
+        'ruler-glow': '0 0 15px 3px rgba(245, 158, 11, 0.45)',
+        'dock': '0 12px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px #1E232D',
+        'bento': '0 8px 28px rgba(0, 0, 0, 0.35)'
+      },
+      minHeight: {
+        touch: '44px'
+      },
+      minWidth: {
+        touch: '44px'
       }
     },
   },

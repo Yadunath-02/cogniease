@@ -3,7 +3,7 @@
  * 
  * Provides:
  * 1. SpeechEngine: High-precision Text-to-Speech (TTS) with word boundary karaoke tracking,
- *    Chromium 15s timeout workaround, and custom speed/voice controls.
+ *    Chromium 15s timeout workaround, and real-time live speed/pitch/voice adjustments.
  * 2. SpeechRecognizer: Hands-free Speech-to-Text (STT) browser dictation.
  */
 
@@ -28,6 +28,7 @@ export class SpeechEngine {
     this.currentSentenceIndex = 0;
     this.globalWordIndex = 0;
     this.sentenceWordOffsets = [];
+    this._isRestartingRate = false;
     
     // Callbacks
     this.onWordBoundary = null;
@@ -93,11 +94,15 @@ export class SpeechEngine {
 
     if (this.sentences.length === 0) return;
 
+    if (overrideOpts.rate !== undefined) {
+      this.options.rate = overrideOpts.rate;
+    }
+
     const opts = { ...this.options, ...overrideOpts };
     this._speakSentence(0, opts);
   }
 
-  _speakSentence(index, opts) {
+  _speakSentence(index, opts = {}) {
     if (index >= this.sentences.length) {
       this.state = 'stopped';
       if (this.onStateChange) this.onStateChange(this.state);
@@ -116,10 +121,14 @@ export class SpeechEngine {
       });
     }
 
+    const currentRate = this.options.rate || opts.rate || 1.0;
+    const currentPitch = this.options.pitch || opts.pitch || 1.0;
+    const currentVolume = this.options.volume || opts.volume || 1.0;
+
     this.utterance = new SpeechSynthesisUtterance(currentSegment.text);
-    this.utterance.rate = opts.rate || this.options.rate;
-    this.utterance.pitch = opts.pitch || this.options.pitch;
-    this.utterance.volume = opts.volume || this.options.volume;
+    this.utterance.rate = currentRate;
+    this.utterance.pitch = currentPitch;
+    this.utterance.volume = currentVolume;
 
     const targetVoice = this.voices.find(v => v.voiceURI === (opts.voiceURI || this.options.voiceURI)) ||
       this.voices.find(v => v.lang === (opts.lang || this.options.lang)) ||
@@ -150,12 +159,17 @@ export class SpeechEngine {
     };
 
     this.utterance.onend = () => {
+      if (this._isRestartingRate) {
+        this._isRestartingRate = false;
+        return;
+      }
       if (this.state === 'playing') {
-        this._speakSentence(index + 1, opts);
+        this._speakSentence(index + 1, { ...opts, rate: this.options.rate });
       }
     };
 
     this.utterance.onerror = (err) => {
+      if (this._isRestartingRate) return;
       if (err.error !== 'canceled' && err.error !== 'interrupted') {
         if (this.onError) this.onError(err);
       }
@@ -189,7 +203,16 @@ export class SpeechEngine {
   }
 
   setRate(rate) {
-    this.options.rate = Math.max(0.5, Math.min(2.5, rate));
+    const clamped = Math.max(0.5, Math.min(2.5, Number(rate) || 1.0));
+    this.options.rate = clamped;
+
+    if (this.isSupported && this.state === 'playing' && this.sentences && this.sentences.length > 0) {
+      this._isRestartingRate = true;
+      this.synth.cancel();
+      setTimeout(() => {
+        this._speakSentence(this.currentSentenceIndex, { ...this.options, rate: clamped });
+      }, 50);
+    }
   }
 
   setPitch(pitch) {

@@ -37,7 +37,7 @@ export default function App() {
   const [letterSpacing, setLetterSpacing] = useState(1.0);
   const [wordSpacing, setWordSpacing] = useState(2.0);
 
-  // 5. Theme State
+  // 5. Theme State ('obsidian' | 'light' | 'sepia' | 'mint' | 'irlen' | 'contrast')
   const [theme, setTheme] = useState('obsidian');
 
   // 6. Speech Synthesis (TTS) & Recognition (STT) States
@@ -61,6 +61,12 @@ export default function App() {
   };
 
   const totalWords = extractWords(sourceText).length;
+
+  // Real-time Theme Synchronizer for the entire Document
+  useEffect(() => {
+    document.documentElement.className = `theme-${theme}`;
+    document.body.className = `theme-${theme}`;
+  }, [theme]);
 
   const handleSelectView = (viewId) => {
     setCurrentView(viewId);
@@ -156,10 +162,12 @@ export default function App() {
   };
 
   const handleChangeTTSRate = (rate) => {
-    setTtsRate(rate);
+    const numRate = Number(rate) || 1.0;
+    setTtsRate(numRate);
     if (speechEngineRef.current) {
-      speechEngineRef.current.setRate(rate);
+      speechEngineRef.current.setRate(numRate);
     }
+    announce(`TTS speed set to ${numRate}x`);
   };
 
   const handlePlayTTS = () => {

@@ -3,43 +3,132 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --bg-primary: #0A0C10;
-    --text-primary: #F0F6FC;
-    --accent-color: #F59E0B;
-    --border-subtle: #1E232D;
+  :root,
+  .theme-obsidian {
+    --obsidian-950: #07080B;
+    --obsidian-900: #0A0C10;
+    --obsidian-800: #0E1117;
+    --obsidian-700: #141820;
+    --obsidian-600: #1A1F28;
+    --obsidian-text: #F0F6FC;
+    --obsidian-muted: #9AA3B2;
+    --obsidian-accent: #F59E0B;
+    --obsidian-border: #1E232D;
+    --ambergold-400: #FBBF24;
+    --ambergold-500: #F59E0B;
+    --text-white-override: #FFFFFF;
+    color-scheme: dark;
+  }
+
+  .theme-light {
+    --obsidian-950: #EEF2F6;
+    --obsidian-900: #F8FAFC;
+    --obsidian-800: #FFFFFF;
+    --obsidian-700: #E2E8F0;
+    --obsidian-600: #CBD5E1;
+    --obsidian-text: #0F172A;
+    --obsidian-muted: #475569;
+    --obsidian-accent: #D97706;
+    --obsidian-border: #CBD5E1;
+    --ambergold-400: #D97706;
+    --ambergold-500: #B45309;
+    --text-white-override: #0F172A;
+    color-scheme: light;
+  }
+
+  .theme-sepia {
+    --obsidian-950: #EFE0C2;
+    --obsidian-900: #FBF0D9;
+    --obsidian-800: #FDF6E6;
+    --obsidian-700: #F4E4C1;
+    --obsidian-600: #DEC49F;
+    --obsidian-text: #2D2319;
+    --obsidian-muted: #6E5C49;
+    --obsidian-accent: #8C4300;
+    --obsidian-border: #DEC49F;
+    --ambergold-400: #B45309;
+    --ambergold-500: #8C4300;
+    --text-white-override: #2D2319;
+    color-scheme: light;
+  }
+
+  .theme-mint {
+    --obsidian-950: #D8F2DE;
+    --obsidian-900: #EBF7EE;
+    --obsidian-800: #F4FBF6;
+    --obsidian-700: #DDF0E2;
+    --obsidian-600: #C2E4CB;
+    --obsidian-text: #132B1A;
+    --obsidian-muted: #3B6B48;
+    --obsidian-accent: #15803D;
+    --obsidian-border: #AFD8B7;
+    --ambergold-400: #15803D;
+    --ambergold-500: #166534;
+    --text-white-override: #132B1A;
+    color-scheme: light;
+  }
+
+  .theme-irlen {
+    --obsidian-950: #D5E7FA;
+    --obsidian-900: #E6F0FA;
+    --obsidian-800: #F3F8FD;
+    --obsidian-700: #D8E8F8;
+    --obsidian-600: #BAD7F4;
+    --obsidian-text: #0E2338;
+    --obsidian-muted: #3D5F82;
+    --obsidian-accent: #1D4ED8;
+    --obsidian-border: #AECDF5;
+    --ambergold-400: #1D4ED8;
+    --ambergold-500: #1E40AF;
+    --text-white-override: #0E2338;
+    color-scheme: light;
+  }
+
+  .theme-contrast {
+    --obsidian-950: #000000;
+    --obsidian-900: #000000;
+    --obsidian-800: #0A0A0A;
+    --obsidian-700: #141414;
+    --obsidian-600: #1E1E1E;
+    --obsidian-text: #FFE600;
+    --obsidian-muted: #FFFF88;
+    --obsidian-accent: #FFE600;
+    --obsidian-border: #FFE600;
+    --ambergold-400: #FFE600;
+    --ambergold-500: #FFE600;
+    --text-white-override: #FFE600;
+    color-scheme: dark;
   }
 
   *:focus-visible {
-    outline: 3px solid #F59E0B !important;
+    outline: 3px solid var(--ambergold-500) !important;
     outline-offset: 3px !important;
     border-radius: 4px;
   }
 
   body {
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
+    background-color: var(--obsidian-900);
+    color: var(--obsidian-text);
     font-family: Inter, Lexend, system-ui, sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
-/* Saccadic Bionic Reading — tactile amber gold anchors */
+/* Light / Sepia / Mint / Irlen heading text adaptability */
+.theme-light .text-white,
+.theme-sepia .text-white,
+.theme-mint .text-white,
+.theme-irlen .text-white,
+.theme-contrast .text-white {
+  color: var(--text-white-override) !important;
+}
+
+/* Saccadic Bionic Reading — tactile anchors */
 .bionic-fixation {
   font-weight: 800 !important;
-  color: #F59E0B;
+  color: var(--ambergold-500);
   opacity: 1;
-}
-
-.theme-light .bionic-fixation,
-.theme-sepia .bionic-fixation,
-.theme-mint .bionic-fixation,
-.theme-irlen .bionic-fixation {
-  color: #B45309;
-}
-
-.theme-contrast .bionic-fixation {
-  color: #FFE600;
 }
 
 /* Multisensory Karaoke TTS Active Word Animation */
@@ -48,7 +137,7 @@
   color: inherit !important;
   padding: 0.1em 0.25em;
   border-radius: 0.25em;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.85);
+  box-shadow: 0 0 0 2px var(--ambergold-500);
   transition: all 0.08s ease-in-out;
 }
 
@@ -135,7 +224,7 @@
   width: 2px;
   height: 12px;
   border-radius: 999px;
-  background: #F59E0B;
+  background: var(--ambergold-500);
   transform-origin: center;
   animation: waveform-bar 0.85s ease-in-out infinite;
 }
@@ -165,7 +254,7 @@
   display: block;
   margin-bottom: 0.85em;
   padding: 0.65em 0.85em;
-  border-left: 3px solid #F59E0B;
+  border-left: 3px solid var(--ambergold-500);
   background: rgba(245, 158, 11, 0.06);
   border-radius: 0 10px 10px 0;
 }
@@ -194,7 +283,7 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
